@@ -1,4 +1,4 @@
-# EventX Roadmap
+# NexMeet Roadmap
 
 ## Phase 0
 Planning

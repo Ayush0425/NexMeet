@@ -1,4 +1,4 @@
-# EventX Architecture
+# NexMeet Architecture
 
 Frontend
 
