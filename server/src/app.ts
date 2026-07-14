@@ -3,6 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
+import routes from "./routes";
 
 const app = express();
 
@@ -29,12 +30,7 @@ app.use(compression());
 // Log HTTP requests
 app.use(morgan("dev"));
 
-// Temporary Route
-app.get("/", (_req, res) => {
-  res.json({
-    success: true,
-    message: "Welcome to NexMeet API 🚀",
-  });
-});
+// API Routes
+app.use("/api/v1", routes);
 
 export default app;
