@@ -1,12 +1,23 @@
 import bcrypt from "bcryptjs";
 
 import {
+  RegisterUserInput,
+  LoginUserInput,
+} from "../validators/auth.validator";
+
+import {
   createUser,
   findUserByEmail,
+  findUserByEmailWithPassword,
   findUserByUsername,
 } from "../repositories/user.repository";
 
-export const registerUserService = async (userData: any) => {
+// ==========================
+// Register User
+// ==========================
+export const registerUserService = async (
+  userData: RegisterUserInput
+) => {
   const {
     fullName,
     username,
@@ -45,17 +56,56 @@ export const registerUserService = async (userData: any) => {
   });
 
   return {
-  id: user._id,
-  fullName: user.fullName,
-  username: user.username,
-  email: user.email,
-  avatar: user.avatar,
-  bio: user.bio,
-  phone: user.phone,
-  role: user.role,
-  provider: user.provider,
-  isVerified: user.isVerified,
-  createdAt: user.createdAt,
-  updatedAt: user.updatedAt,
+    id: user._id,
+    fullName: user.fullName,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    bio: user.bio,
+    phone: user.phone,
+    role: user.role,
+    provider: user.provider,
+    isVerified: user.isVerified,
+    createdAt: user.createdAt,
+    updatedAt: user.updatedAt,
+  };
 };
+
+// ==========================
+// Login User
+// ==========================
+export const loginUserService = async (
+  userData: LoginUserInput
+) => {
+  const { email, password } = userData;
+
+  // Find user
+  const user = await findUserByEmailWithPassword(email);
+
+  if (!user) {
+    throw new Error("Invalid email or password");
+  }
+
+  // Compare password
+  const isPasswordMatched = await bcrypt.compare(
+    password,
+    user.password
+  );
+
+  if (!isPasswordMatched) {
+    throw new Error("Invalid email or password");
+  }
+
+  return {
+    id: user._id,
+    fullName: user.fullName,
+    username: user.username,
+    email: user.email,
+    avatar: user.avatar,
+    bio: user.bio,
+    phone: user.phone,
+    role: user.role,
+    provider: user.provider,
+    isVerified: user.isVerified,
+  };
 };
