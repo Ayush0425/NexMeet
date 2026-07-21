@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { generateToken } from "../utils/jwt";
 
 import {
   RegisterUserInput,
@@ -95,6 +96,7 @@ export const loginUserService = async (
   if (!isPasswordMatched) {
     throw new Error("Invalid email or password");
   }
+  const token = generateToken(user._id.toString());
 
   return {
     id: user._id,
@@ -107,5 +109,6 @@ export const loginUserService = async (
     role: user.role,
     provider: user.provider,
     isVerified: user.isVerified,
+    token: token,
   };
 };
