@@ -11,12 +11,13 @@ import {
   loginUserService,
 } from "../services/auth.service";
 
+import { AuthRequest } from "../types/request.types";
+
 // ==========================
 // Register User
 // ==========================
 export const registerUser = async (req: Request, res: Response) => {
   try {
-    // Validate request body
     const validatedData = registerSchema.parse(req.body);
 
     const user = await registerUserService(validatedData);
@@ -47,15 +48,14 @@ export const registerUser = async (req: Request, res: Response) => {
 // ==========================
 export const loginUser = async (req: Request, res: Response) => {
   try {
-    // Validate request body
     const validatedData = loginSchema.parse(req.body);
 
-    const user = await loginUserService(validatedData);
+    const result = await loginUserService(validatedData);
 
     return res.status(200).json({
       success: true,
       message: "Login successful",
-      data: user,
+      data: result,
     });
   } catch (error: any) {
     if (error instanceof ZodError) {
@@ -69,6 +69,27 @@ export const loginUser = async (req: Request, res: Response) => {
     return res.status(400).json({
       success: false,
       message: error.message,
+    });
+  }
+};
+
+// ==========================
+// Get Current User
+// ==========================
+export const getCurrentUser = async (
+  req: AuthRequest,
+  res: Response
+) => {
+  try {
+    return res.status(200).json({
+      success: true,
+      message: "Current user fetched successfully",
+      data: req.user,
+    });
+  } catch (error: any) {
+    return res.status(500).json({
+      success: false,
+      message: error.message || "Internal Server Error",
     });
   }
 };

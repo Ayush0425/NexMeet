@@ -16,3 +16,8 @@ export const findUserByUsername = async (username: string) => {
 export const createUser = async (userData: object) => {
   return await User.create(userData);
 };
+export const findUserById = async (id: string) => {
+ return await User.findById(id).select(
+  "-password -refreshToken -__v"
+);
+};
