@@ -13,3 +13,25 @@ export const getAllEvents = async () => {
     .populate("organizer", "fullName email")
     .sort({ startDateTime: 1 });
 };
+export const getEventById = async (eventId: string) => {
+  return await EventModel.findById(eventId).populate(
+    "organizer",
+    "fullName email"
+  );
+};
+export const updateEvent = async (
+  eventId: string,
+  updateData: Partial<CreateEventInput>
+) => {
+  return await EventModel.findByIdAndUpdate(
+    eventId,
+    updateData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  ).populate("organizer", "fullName email");
+};
+export const deleteEvent = async (eventId: string) => {
+  return await EventModel.findByIdAndDelete(eventId);
+};
