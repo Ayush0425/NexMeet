@@ -4,6 +4,7 @@ import helmet from "helmet";
 import compression from "compression";
 import morgan from "morgan";
 import routes from "./routes";
+import { errorHandler } from "./middleware/error.middleware";
 
 const app = express();
 
@@ -32,5 +33,7 @@ app.use(morgan("dev"));
 
 // API Routes
 app.use("/api/v1", routes);
+
+app.use(errorHandler);
 
 export default app;
