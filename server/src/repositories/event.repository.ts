@@ -9,6 +9,7 @@ export const createEvent = async (
     organizer: string;
     availableSeats: number;
   }
+  
 ) => {
   return await EventModel.create(eventData);
 };
@@ -123,4 +124,34 @@ export const updateEvent = async (
 // ==========================
 export const deleteEvent = async (eventId: string) => {
   return await EventModel.findByIdAndDelete(eventId);
+};
+
+export const updateAvailableSeats = async (
+  eventId: string,
+  availableSeats: number
+) => {
+  return await EventModel.findByIdAndUpdate(
+    eventId,
+    { availableSeats },
+    { new: true }
+  );
+};
+// ==========================
+// Increase Available Seats
+// ==========================
+export const increaseAvailableSeats = async (
+  eventId: string,
+  seats: number
+) => {
+  return await EventModel.findByIdAndUpdate(
+    eventId,
+    {
+      $inc: {
+        availableSeats: seats,
+      },
+    },
+    {
+      new: true,
+    }
+  );
 };

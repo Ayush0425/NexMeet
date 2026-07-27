@@ -1,4 +1,6 @@
 import { CreateEventInput } from "../validators/event.validator";
+import { AppError } from "../utils/AppError";
+
 import {
   createEvent,
   getEventById,
@@ -6,6 +8,9 @@ import {
   deleteEvent,
 } from "../repositories/event.repository";
 
+// ==========================
+// Create Event
+// ==========================
 export const createEventService = async (
   eventData: CreateEventInput,
   organizerId: string
@@ -19,17 +24,24 @@ export const createEventService = async (
   return newEvent;
 };
 
+// ==========================
+// Get Event By ID
+// ==========================
 export const getEventByIdService = async (
   eventId: string
 ) => {
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new Error("Event not found");
+    throw new AppError("Event not found", 404);
   }
 
   return event;
 };
+
+// ==========================
+// Update Event
+// ==========================
 export const updateEventService = async (
   eventId: string,
   organizerId: string,
@@ -39,33 +51,7 @@ export const updateEventService = async (
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new Error("Event not found");
-  }
-
-  // Check ownership
- // Check ownership
-const eventOrganizerId =
-  (event.organizer as any)._id?.toString() ??
-  event.organizer.toString();
-
-if (eventOrganizerId !== organizerId) {
-  throw new Error("You are not authorized to update this event");
-}
-
-  // Update event
-  const updatedEvent = await updateEvent(eventId, updateData);
-
-  return updatedEvent;
-};
-export const deleteEventService = async (
-  eventId: string,
-  organizerId: string
-) => {
-  // Check if event exists
-  const event = await getEventById(eventId);
-
-  if (!event) {
-    throw new Error("Event not found");
+    throw new AppError("Event not found", 404);
   }
 
   // Check ownership
@@ -74,11 +60,47 @@ export const deleteEventService = async (
     event.organizer.toString();
 
   if (eventOrganizerId !== organizerId) {
-    throw new Error("You are not authorized to delete this event");
+    throw new AppError(
+      "You are not authorized to update this event",
+      403
+    );
+  }
+
+  // Update event
+  const updatedEvent = await updateEvent(
+    eventId,
+    updateData
+  );
+
+  return updatedEvent;
+};
+
+// ==========================
+// Delete Event
+// ==========================
+export const deleteEventService = async (
+  eventId: string,
+  organizerId: string
+) => {
+  // Check if event exists
+  const event = await getEventById(eventId);
+
+  if (!event) {
+    throw new AppError("Event not found", 404);
+  }
+
+  // Check ownership
+  const eventOrganizerId =
+    (event.organizer as any)._id?.toString() ??
+    event.organizer.toString();
+
+  if (eventOrganizerId !== organizerId) {
+    throw new AppError(
+      "You are not authorized to delete this event",
+      403
+    );
   }
 
   // Delete event
   await deleteEvent(eventId);
-
-  return;
 };
