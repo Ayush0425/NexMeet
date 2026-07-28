@@ -22,11 +22,11 @@ const bookingSchema = new Schema(
       required: true,
       min: 0,
     },
-    bookingStatus: {
-      type: String,
-      enum: ["confirmed", "cancelled"],
-      default: "confirmed",
-    },
+ bookingStatus: {
+  type: String,
+  enum: ["pending", "confirmed", "cancelled"],
+  default: "pending",
+},
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],
