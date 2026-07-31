@@ -8,4 +8,8 @@ export interface Event {
   rating: number;
   attendees: number;
   image: string;
+  description: string;
+  organizer: string;
+organizerRole: string;
+organizerImage: string;
 }
