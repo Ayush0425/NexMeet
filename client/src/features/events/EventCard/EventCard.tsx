@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 import {
   CalendarDays,
   Heart,
@@ -22,6 +24,8 @@ function EventCard({
   rating,
   attendees,
 }: EventCardProps) {
+  const [liked, setLiked] = useState(false);
+
   return (
     <div className="overflow-hidden rounded-2xl border border-slate-800 bg-[#162032] transition hover:scale-[1.02] hover:border-emerald-500">
       <div className="relative">
@@ -35,8 +39,18 @@ function EventCard({
           {category}
         </span>
 
-        <button className="absolute right-4 top-4 rounded-full bg-black/50 p-2 text-white">
-          <Heart size={18} />
+        <button
+          onClick={() => setLiked(!liked)}
+          className="absolute right-4 top-4 rounded-full bg-black/50 p-2 transition duration-300 hover:scale-110"
+        >
+          <Heart
+            size={18}
+            className={`transition duration-300 ${
+              liked
+                ? "fill-red-500 text-red-500"
+                : "text-white"
+            }`}
+          />
         </button>
       </div>
 
