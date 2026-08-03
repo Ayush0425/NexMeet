@@ -1,6 +1,8 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import MainLayout from "../layouts/MainLayout";
+
+import ProtectedRoute from "../components/common/ProtectedRoute/ProtectedRoute";
 
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Login/LoginPage";
@@ -12,24 +14,44 @@ import NotFoundPage from "../pages/NotFound/NotFoundPage";
 
 function AppRoutes() {
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Routes with Navbar & Footer */}
-        <Route element={<MainLayout />}>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/events" element={<EventsPage />} />
-          <Route path="/events/:id" element={<EventDetailsPage />} />
-        </Route>
+    <Routes>
+      {/* Routes with Navbar & Footer */}
+      <Route element={<MainLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/events" element={<EventsPage />} />
+        <Route
+          path="/events/:id"
+          element={<EventDetailsPage />}
+        />
+      </Route>
 
-        {/* Standalone Routes */}
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
-        <Route path="/dashboard/*" element={<DashboardPage />} />
+      {/* Authentication Routes */}
+      <Route
+        path="/login"
+        element={<LoginPage />}
+      />
 
-        {/* 404 */}
-        <Route path="*" element={<NotFoundPage />} />
-      </Routes>
-    </BrowserRouter>
+      <Route
+        path="/register"
+        element={<RegisterPage />}
+      />
+
+      {/* Protected Routes */}
+      <Route
+        path="/dashboard/*"
+        element={
+          <ProtectedRoute>
+            <DashboardPage />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 404 */}
+      <Route
+        path="*"
+        element={<NotFoundPage />}
+      />
+    </Routes>
   );
 }
 

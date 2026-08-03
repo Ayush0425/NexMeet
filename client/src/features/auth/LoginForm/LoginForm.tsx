@@ -1,12 +1,20 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useNavigate } from "react-router-dom";
+
+import { useAuth } from "../../../context/auth/AuthContext";
 import { loginUser } from "../../../services/auth/auth.service";
+
 import {
   loginSchema,
   type LoginFormData,
 } from "../../../validators/auth/auth.schema";
 
 function LoginForm() {
+  const navigate = useNavigate();
+
+  const { login } = useAuth();
+
   const {
     register,
     handleSubmit,
@@ -16,20 +24,31 @@ function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
-  try {
-    const response = await loginUser(data);
+    try {
+      const response = await loginUser(data);
 
-    console.log(response);
+      console.log("Login Response:", response.data);
 
-    alert("Login Successful!");
+      // Extract token and remaining user fields
+      const { token, ...user } = response.data;
 
-    // Next we'll save JWT and redirect
-  } catch (error) {
-    console.error(error);
+      // Save in Auth Context
+      login(user, token);
 
-    alert("Invalid email or password");
-  }
-};
+      alert("Login Successful!");
+
+      navigate("/");
+    } catch (error: any) {
+      console.error(error);
+
+      console.log(error.response?.data);
+
+      alert(
+        error.response?.data?.message ||
+          "Invalid email or password"
+      );
+    }
+  };
 
   return (
     <form
@@ -77,7 +96,7 @@ function LoginForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting ? "Signing In..." : "Sign In"}
       </button>
