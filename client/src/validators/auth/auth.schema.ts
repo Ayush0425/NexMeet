@@ -53,3 +53,37 @@ export const registerSchema = z
   });
 
 export type RegisterFormData = z.infer<typeof registerSchema>;
+
+// ======================
+// Forgot Password Schema
+// ======================
+export const forgotPasswordSchema = z.object({
+  email: z
+    .string()
+    .min(1, "Email is required")
+    .email("Invalid email address"),
+});
+
+export type ForgotPasswordFormData =
+  z.infer<typeof forgotPasswordSchema>;
+
+// ======================
+// Reset Password Schema
+// ======================
+export const resetPasswordSchema = z
+  .object({
+    password: z
+      .string()
+      .min(6, "Password must be at least 6 characters"),
+
+    confirmPassword: z
+      .string()
+      .min(6, "Confirm your password"),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
+
+export type ResetPasswordFormData =
+  z.infer<typeof resetPasswordSchema>;

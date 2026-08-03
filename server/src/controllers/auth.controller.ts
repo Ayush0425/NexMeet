@@ -4,11 +4,15 @@ import { ZodError } from "zod";
 import {
   registerSchema,
   loginSchema,
+  forgotPasswordSchema,
+  resetPasswordSchema,
 } from "../validators/auth.validator";
 
 import {
   registerUserService,
   loginUserService,
+  forgotPasswordService,
+  resetPasswordService,
 } from "../services/auth.service";
 
 import { AuthRequest } from "../types/request.types";
@@ -16,7 +20,10 @@ import { AuthRequest } from "../types/request.types";
 // ==========================
 // Register User
 // ==========================
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const validatedData = registerSchema.parse(req.body);
 
@@ -46,7 +53,10 @@ export const registerUser = async (req: Request, res: Response) => {
 // ==========================
 // Login User
 // ==========================
-export const loginUser = async (req: Request, res: Response) => {
+export const loginUser = async (
+  req: Request,
+  res: Response
+) => {
   try {
     const validatedData = loginSchema.parse(req.body);
 
@@ -57,6 +67,71 @@ export const loginUser = async (req: Request, res: Response) => {
       message: "Login successful",
       data: result,
     });
+  } catch (error: any) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: error.flatten().fieldErrors,
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ==========================
+// Forgot Password
+// ==========================
+export const forgotPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const validatedData =
+      forgotPasswordSchema.parse(req.body);
+
+    const result =
+      await forgotPasswordService(validatedData);
+
+    return res.status(200).json(result);
+  } catch (error: any) {
+    if (error instanceof ZodError) {
+      return res.status(400).json({
+        success: false,
+        message: "Validation failed",
+        errors: error.flatten().fieldErrors,
+      });
+    }
+
+    return res.status(400).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
+
+// ==========================
+// Reset Password
+// ==========================
+export const resetPassword = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const validatedData =
+      resetPasswordSchema.parse({
+        token: req.params.token,
+        ...req.body,
+      });
+
+    const result =
+      await resetPasswordService(validatedData);
+
+    return res.status(200).json(result);
   } catch (error: any) {
     if (error instanceof ZodError) {
       return res.status(400).json({
@@ -89,7 +164,8 @@ export const getCurrentUser = async (
   } catch (error: any) {
     return res.status(500).json({
       success: false,
-      message: error.message || "Internal Server Error",
+      message:
+        error.message || "Internal Server Error",
     });
   }
 };

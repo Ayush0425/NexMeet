@@ -1,6 +1,6 @@
+import { Link, useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useNavigate } from "react-router-dom";
 
 import { useAuth } from "../../../context/auth/AuthContext";
 import { loginUser } from "../../../services/auth/auth.service";
@@ -29,10 +29,10 @@ function LoginForm() {
 
       console.log("Login Response:", response.data);
 
-      // Extract token and remaining user fields
+      // Extract token and user
       const { token, ...user } = response.data;
 
-      // Save in Auth Context
+      // Save user & token
       login(user, token);
 
       alert("Login Successful!");
@@ -55,6 +55,7 @@ function LoginForm() {
       onSubmit={handleSubmit(onSubmit)}
       className="space-y-6"
     >
+      {/* Email */}
       <div>
         <label className="mb-2 block text-sm text-slate-300">
           Email
@@ -74,6 +75,7 @@ function LoginForm() {
         )}
       </div>
 
+      {/* Password */}
       <div>
         <label className="mb-2 block text-sm text-slate-300">
           Password
@@ -93,6 +95,17 @@ function LoginForm() {
         )}
       </div>
 
+      {/* Forgot Password */}
+      <div className="flex justify-end">
+        <Link
+          to="/forgot-password"
+          className="text-sm text-emerald-400 transition hover:text-emerald-300"
+        >
+          Forgot Password?
+        </Link>
+      </div>
+
+      {/* Submit */}
       <button
         type="submit"
         disabled={isSubmitting}
@@ -100,6 +113,17 @@ function LoginForm() {
       >
         {isSubmitting ? "Signing In..." : "Sign In"}
       </button>
+
+      {/* Register */}
+      <p className="text-center text-sm text-slate-400">
+        Don't have an account?{" "}
+        <Link
+          to="/register"
+          className="font-medium text-emerald-400 hover:text-emerald-300"
+        >
+          Sign Up
+        </Link>
+      </p>
     </form>
   );
 }

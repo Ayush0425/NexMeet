@@ -70,6 +70,19 @@ const userSchema = new Schema(
       type: String,
       default: "",
     },
+
+    // ==========================
+    // Forgot Password
+    // ==========================
+    resetPasswordToken: {
+      type: String,
+      default: "",
+    },
+
+    resetPasswordExpire: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

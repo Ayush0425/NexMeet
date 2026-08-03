@@ -7,6 +7,8 @@ import ProtectedRoute from "../components/common/ProtectedRoute/ProtectedRoute";
 import HomePage from "../pages/Home/HomePage";
 import LoginPage from "../pages/Login/LoginPage";
 import RegisterPage from "../pages/Register/RegisterPage";
+import ForgotPasswordPage from "../pages/ForgotPassword/ForgotPasswordPage";
+import ResetPasswordPage from "../pages/ResetPassword/ResetPasswordPage";
 import EventsPage from "../pages/Events/EventsPage";
 import EventDetailsPage from "../pages/EventDetails/EventDetailsPage";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
@@ -18,7 +20,12 @@ function AppRoutes() {
       {/* Routes with Navbar & Footer */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
-        <Route path="/events" element={<EventsPage />} />
+
+        <Route
+          path="/events"
+          element={<EventsPage />}
+        />
+
         <Route
           path="/events/:id"
           element={<EventDetailsPage />}
@@ -34,6 +41,16 @@ function AppRoutes() {
       <Route
         path="/register"
         element={<RegisterPage />}
+      />
+
+      <Route
+        path="/forgot-password"
+        element={<ForgotPasswordPage />}
+      />
+
+      <Route
+        path="/reset-password/:token"
+        element={<ResetPasswordPage />}
       />
 
       {/* Protected Routes */}
