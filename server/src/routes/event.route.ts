@@ -10,6 +10,7 @@ import {
 
 import { protect } from "../middleware/auth.middleware";
 import { authorize } from "../middleware/role.middleware";
+import upload from "../middleware/upload.middleware";
 
 const router = Router();
 
@@ -27,21 +28,25 @@ router.get("/:id", fetchEventById);
 // Organizer Routes
 // ==========================
 
-// Create event
+// Create Event
 router.post(
   "/",
   protect,
   authorize("organizer"),
+  upload.single("image"),
   createEvent
 );
 
-// Update event
+// Update Event
 router.put(
   "/:id",
   protect,
   authorize("organizer"),
+  upload.single("image"),
   editEvent
 );
+
+// Delete Event
 router.delete(
   "/:id",
   protect,

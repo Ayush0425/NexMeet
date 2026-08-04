@@ -3,7 +3,7 @@ import {
   MapPinned,
   Share2,
 } from "lucide-react";
-
+import BookingCard from "../../features/booking/BookingCard/BookingCard";
 import RelatedEvents from "../../features/eventDetails/RelatedEvents/RelatedEvents";
 import { events } from "../../data/events";
 
@@ -269,13 +269,14 @@ function EventDetailsPage() {
     </div>
   </div>
 
-  <button className="mt-8 w-full rounded-xl bg-emerald-500 py-4 text-lg font-semibold text-white transition hover:bg-emerald-600">
-    Book Ticket
-  </button>
+<BookingCard
+  eventId={event.id}
+  price={event.price}
+/>
 </div>
 
 {/* Related Events */}
-<RelatedEvents currentEventId={event.id} />
+
 
           {/* Related Events */}
           <RelatedEvents currentEventId={event.id} />

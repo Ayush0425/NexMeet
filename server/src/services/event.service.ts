@@ -13,10 +13,12 @@ import {
 // ==========================
 export const createEventService = async (
   eventData: CreateEventInput,
-  organizerId: string
+  organizerId: string,
+  banner?: string
 ) => {
   const newEvent = await createEvent({
     ...eventData,
+    banner,
     organizer: organizerId,
     availableSeats: eventData.totalSeats,
   });
