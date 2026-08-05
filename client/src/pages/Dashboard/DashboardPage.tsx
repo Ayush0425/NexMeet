@@ -1,13 +1,17 @@
-import LogoutButton from "../../components/common/LogoutButton/LogoutButton";
+import { Outlet } from "react-router-dom";
+
+import DashboardSidebar from "../../features/dashboard/DashboardSidebar/DashboardSidebar";
 
 function DashboardPage() {
   return (
-    <main className="min-h-screen bg-[#0B1120] p-10">
-      <h1 className="mb-8 text-4xl font-bold text-white">
-        Dashboard
-      </h1>
+    <main className="flex min-h-screen bg-[#0B1120]">
+      {/* Sidebar */}
+      <DashboardSidebar />
 
-      <LogoutButton />
+      {/* Main Content */}
+      <section className="flex-1 overflow-y-auto p-10">
+        <Outlet />
+      </section>
     </main>
   );
 }

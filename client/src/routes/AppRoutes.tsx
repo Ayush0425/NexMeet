@@ -12,6 +12,10 @@ import ResetPasswordPage from "../pages/ResetPassword/ResetPasswordPage";
 import EventsPage from "../pages/Events/EventsPage";
 import EventDetailsPage from "../pages/EventDetails/EventDetailsPage";
 import DashboardPage from "../pages/Dashboard/DashboardPage";
+import DashboardHome from "../pages/Dashboard/DashboardHome";
+import CreateEventPage from "../pages/Dashboard/CreateEventpage";
+import MyEventsPage from "../pages/Dashboard/MyEventPage";
+import ProfilePage from "../pages/Dashboard/Profilepage";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
 
 function AppRoutes() {
@@ -53,15 +57,35 @@ function AppRoutes() {
         element={<ResetPasswordPage />}
       />
 
-      {/* Protected Routes */}
+      {/* Protected Dashboard Routes */}
       <Route
-        path="/dashboard/*"
+        path="/dashboard"
         element={
           <ProtectedRoute>
             <DashboardPage />
           </ProtectedRoute>
         }
-      />
+      >
+        <Route
+          index
+          element={<DashboardHome />}
+        />
+
+        <Route
+          path="create-event"
+          element={<CreateEventPage />}
+        />
+
+        <Route
+          path="my-events"
+          element={<MyEventsPage />}
+        />
+
+        <Route
+          path="profile"
+          element={<ProfilePage />}
+        />
+      </Route>
 
       {/* 404 */}
       <Route
