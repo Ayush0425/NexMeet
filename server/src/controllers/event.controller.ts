@@ -20,15 +20,13 @@ export const createEvent = asyncHandler(
   async (req: AuthRequest, res: Response) => {
     const validatedData = createEventSchema.parse(req.body);
 
-   const image = (req.file as any)?.path;
+    const banner = (req.file as Express.Multer.File)?.path;
 
-const banner = (req.file as Express.Multer.File)?.path;
-
-const event = await createEventService(
-  validatedData,
-  req.user!._id.toString(),
-  banner
-);
+    const event = await createEventService(
+      validatedData,
+      req.user!._id.toString(),
+      banner
+    );
 
     return res.status(201).json({
       success: true,
@@ -37,7 +35,6 @@ const event = await createEventService(
     });
   }
 );
-
 
 // ==========================
 // Get All Events
@@ -79,7 +76,9 @@ export const fetchAllEvents = asyncHandler(
 // ==========================
 export const fetchEventById = asyncHandler(
   async (req: Request, res: Response) => {
-    const event = await getEventByIdService(String(req.params.id));
+    const event = await getEventByIdService(
+      String(req.params.id)
+    );
 
     return res.status(200).json({
       success: true,

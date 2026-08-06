@@ -33,7 +33,7 @@ router.post(
   "/",
   protect,
   authorize("organizer"),
-  upload.single("image"),
+  upload.single("banner"),
   createEvent
 );
 
@@ -42,7 +42,7 @@ router.put(
   "/:id",
   protect,
   authorize("organizer"),
-  upload.single("image"),
+  upload.single("banner"),
   editEvent
 );
 

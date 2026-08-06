@@ -31,17 +31,17 @@ export const createEventSchema = z.object({
 
   startDateTime: z.coerce.date(),
 
-  banner: z.string().url().optional().or(z.literal("")),
+ banner: z.string().optional(),
 
-  price: z
-    .number()
-    .min(0, "Price cannot be negative")
-    .default(0),
+price: z.coerce
+  .number()
+  .min(0, "Price cannot be negative")
+  .default(0),
 
-  totalSeats: z
-    .number()
-    .int()
-    .positive("Total seats must be greater than 0"),
+totalSeats: z.coerce
+  .number()
+  .int()
+  .positive("Total seats must be greater than 0"),
 });
 
 export type CreateEventInput =

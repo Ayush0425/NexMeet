@@ -21,3 +21,22 @@ export const getEventById = async (
 
   return response.data;
 };
+
+// ======================
+// Create Event
+// ======================
+export const createEvent = async (
+  formData: FormData
+) => {
+  const response = await api.post(
+    "/events",
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
