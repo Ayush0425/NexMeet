@@ -75,17 +75,21 @@ export const fetchAllEvents = asyncHandler(
 // ==========================
 // Get My Events
 // ==========================
-export const getMyEvents = asyncHandler(
+export const editEvent = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const events =
-      await getMyEventsService(
-        req.user!._id.toString()
-      );
+    const banner = (req.file as Express.Multer.File)?.path;
+
+    const updatedEvent = await updateEventService(
+      String(req.params.id),
+      req.user!._id.toString(),
+      req.body,
+      banner
+    );
 
     return res.status(200).json({
       success: true,
-      count: events.length,
-      data: events,
+      message: "Event updated successfully",
+      data: updatedEvent,
     });
   }
 );
@@ -106,20 +110,17 @@ export const fetchEventById = asyncHandler(
 );
 
 // ==========================
-// Update Event
+// Get My Events
 // ==========================
-export const editEvent = asyncHandler(
+export const getMyEvents = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const updatedEvent = await updateEventService(
-      String(req.params.id),
-      req.user!._id.toString(),
-      req.body
+    const events = await getMyEventsService(
+      req.user!._id.toString()
     );
 
     return res.status(200).json({
       success: true,
-      message: "Event updated successfully",
-      data: updatedEvent,
+      data: events,
     });
   }
 );

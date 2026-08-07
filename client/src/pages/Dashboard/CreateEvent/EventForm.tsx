@@ -7,25 +7,48 @@ import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { createEvent } from "../../../services/event/event.service";
+import {
+  createEvent,
+  updateEvent,
+} from "../../../services/event/event.service";
 
 import {
   createEventSchema,
   type CreateEventFormData,
 } from "../../../validators/event/event.schema";
 
-function CreateEvent() {
+type EventFormProps = {
+  mode?: "create" | "edit";
+  event?: any;
+};
+
+function EventForm({
+  mode = "create",
+  event,
+}: EventFormProps) {
   const navigate = useNavigate();
 
   const [banner, setBanner] = useState<File | null>(null);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm({
-    resolver: zodResolver(createEventSchema),
-  });
+ const {
+  register,
+  handleSubmit,
+  formState: { errors, isSubmitting },
+} = useForm({
+  resolver: zodResolver(createEventSchema),
+  defaultValues: event
+    ? {
+        title: event.title,
+        description: event.description,
+        category: event.category,
+        location: event.location,
+        startDateTime: event.startDateTime
+          ?.slice(0, 16),
+        price: event.price,
+        totalSeats: event.totalSeats,
+      }
+    : undefined,
+});
 
  const handleBannerChange = (
   e: ChangeEvent<HTMLInputElement>
@@ -71,11 +94,17 @@ function CreateEvent() {
         formData.append("banner", banner);
       }
 
-      await createEvent(formData);
+     if (mode === "create") {
+  await createEvent(formData);
 
-      alert("Event created successfully!");
+  alert("Event created successfully!");
+} else {
+  await updateEvent(event._id, formData);
 
-      navigate("/dashboard/my-events");
+  alert("Event updated successfully!");
+}
+
+navigate("/dashboard/my-events");
     } catch (error) {
       console.error(error);
       alert("Failed to create event");
@@ -84,13 +113,17 @@ function CreateEvent() {
 
   return (
     <div className="mx-auto max-w-4xl rounded-3xl bg-[#162032] p-8 shadow-xl">
-      <h1 className="mb-2 text-3xl font-bold text-white">
-        Create New Event
-      </h1>
+    <h1 className="mb-2 text-3xl font-bold text-white">
+  {mode === "create"
+    ? "Create New Event"
+    : "Edit Event"}
+</h1>
 
-      <p className="mb-8 text-slate-400">
-        Fill in the details below to publish your event.
-      </p>
+<p className="mb-8 text-slate-400">
+  {mode === "create"
+    ? "Fill in the details below to publish your event."
+    : "Update your event information."}
+</p>
 
       <form
         onSubmit={handleSubmit(onSubmit)}
@@ -243,6 +276,7 @@ function CreateEvent() {
         </div>
 
      {/* Banner */}
+{/* Banner */}
 <div>
   <label className="mb-2 block text-sm font-medium text-slate-300">
     Event Banner
@@ -268,13 +302,17 @@ function CreateEvent() {
           disabled={isSubmitting}
           className="w-full rounded-xl bg-emerald-500 py-3 text-lg font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {isSubmitting
-            ? "Publishing..."
-            : "Publish Event"}
+        {isSubmitting
+  ? mode === "create"
+    ? "Publishing..."
+    : "Updating..."
+  : mode === "create"
+  ? "Publish Event"
+  : "Update Event"}
         </button>
       </form>
     </div>
   );
 }
 
-export default CreateEvent;
+export default EventForm;

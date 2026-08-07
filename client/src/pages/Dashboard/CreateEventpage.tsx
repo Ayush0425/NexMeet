@@ -1,7 +1,7 @@
-import CreateEvent from "./CreateEvent/CreateEvent";
+import EventForm from "./CreateEvent/EventForm";
 
 function CreateEventPage() {
-  return <CreateEvent />;
+  return <EventForm />;
 }
 
 export default CreateEventPage;

@@ -51,3 +51,35 @@ export const getMyEvents = async () => {
 
   return response.data;
 };
+
+// ======================
+// Update Event
+// ======================
+export const updateEvent = async (
+  id: string,
+  formData: FormData
+) => {
+  const response = await api.put(
+    `/events/${id}`,
+    formData,
+    {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }
+  );
+
+  return response.data;
+};
+// ======================
+// Delete Event
+// ======================
+export const deleteEvent = async (
+  id: string
+) => {
+  const response = await api.delete(
+    `/events/${id}`
+  );
+
+  return response.data;
+};

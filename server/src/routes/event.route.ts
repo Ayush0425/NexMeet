@@ -4,9 +4,9 @@ import {
   createEvent,
   fetchAllEvents,
   fetchEventById,
+  getMyEvents,
   editEvent,
   removeEvent,
-  getMyEvents,
 } from "../controllers/event.controller";
 
 import { protect } from "../middleware/auth.middleware";
@@ -15,25 +15,24 @@ import upload from "../middleware/upload.middleware";
 
 const router = Router();
 
-// ==========================
+// ======================================================
 // Public Routes
-// ==========================
+// ======================================================
 
 // Get all events
 router.get("/", fetchAllEvents);
 
+// ======================================================
+// Organizer Routes
+// ======================================================
+
+// Get My Events
 router.get(
   "/my-events",
   protect,
   authorize("organizer"),
   getMyEvents
 );
-// Get single event by ID
-router.get("/:id", fetchEventById);
-
-// ==========================
-// Organizer Routes
-// ==========================
 
 // Create Event
 router.post(
@@ -60,5 +59,12 @@ router.delete(
   authorize("organizer"),
   removeEvent
 );
+
+// ======================================================
+// Public Dynamic Routes (Keep LAST)
+// ======================================================
+
+// Get single event by ID
+router.get("/:id", fetchEventById);
 
 export default router;

@@ -167,3 +167,4 @@ export const getEventsByOrganizer = async (
     createdAt: -1,
   });
 };
+

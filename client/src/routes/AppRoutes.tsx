@@ -17,6 +17,7 @@ import CreateEventPage from "../pages/Dashboard/CreateEventpage";
 import MyEventsPage from "../pages/Dashboard/MyEventPage";
 import ProfilePage from "../pages/Dashboard/Profilepage";
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
+import EditEventPage from "../pages/Dashboard/EditEventPage";
 
 function AppRoutes() {
   return (
@@ -82,9 +83,14 @@ function AppRoutes() {
         />
 
         <Route
+          path="edit-event/:id"
+          element={<EditEventPage />}
+        />
+        <Route
           path="profile"
           element={<ProfilePage />}
         />
+
       </Route>
 
       {/* 404 */}

@@ -42,12 +42,13 @@ export const getEventByIdService = async (
   return event;
 };
 
+// ==========================
+// Get My Events
+// ==========================
 export const getMyEventsService = async (
   organizerId: string
 ) => {
-  return await getEventsByOrganizer(
-    organizerId
-  );
+  return await getEventsByOrganizer(organizerId);
 };
 
 // ==========================
@@ -56,7 +57,8 @@ export const getMyEventsService = async (
 export const updateEventService = async (
   eventId: string,
   organizerId: string,
-  updateData: Partial<CreateEventInput>
+  updateData: Partial<CreateEventInput>,
+  banner?: string
 ) => {
   // Check if event exists
   const event = await getEventById(eventId);
@@ -77,12 +79,13 @@ export const updateEventService = async (
     );
   }
 
-  
-
   // Update event
   const updatedEvent = await updateEvent(
     eventId,
-    updateData
+    {
+      ...updateData,
+      ...(banner && { banner }),
+    }
   );
 
   return updatedEvent;

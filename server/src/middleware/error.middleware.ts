@@ -27,10 +27,13 @@ export const errorHandler = (
   }
 
   // Unknown Errors
-  console.error(err);
+console.error("ERROR:", err);
 
-  return res.status(500).json({
-    success: false,
-    message: "Internal Server Error",
-  });
+return res.status(500).json({
+  success: false,
+  message: err instanceof Error ? err.message : "Internal Server Error",
+  stack: process.env.NODE_ENV === "development"
+    ? (err instanceof Error ? err.stack : undefined)
+    : undefined,
+});
 };

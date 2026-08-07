@@ -1,8 +1,35 @@
-import { useQuery } from "@tanstack/react-query";
+import {
+  useQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
-import { getMyEvents } from "../../../services/event/event.service";
+import {
+  getMyEvents,
+  deleteEvent,
+} from "../../../services/event/event.service";
 
 function MyEvents() {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: deleteEvent,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["my-events"],
+      });
+
+      alert("Event deleted successfully!");
+    },
+
+    onError: () => {
+      alert("Failed to delete event");
+    },
+  });
+
   const {
     data,
     isLoading,
@@ -79,7 +106,8 @@ function MyEvents() {
               </p>
 
               <p className="text-slate-400">
-                💺 {event.availableSeats}/{event.totalSeats}
+                💺 {event.availableSeats}/
+                {event.totalSeats}
               </p>
 
               <p className="text-2xl font-bold text-emerald-400">
@@ -87,12 +115,36 @@ function MyEvents() {
               </p>
 
               <div className="flex gap-3 pt-4">
-                <button className="flex-1 rounded-xl bg-blue-600 py-2 font-semibold text-white transition hover:bg-blue-700">
+                <button
+                  onClick={() =>
+                    navigate(
+                      `/dashboard/edit-event/${event._id}`
+                    )
+                  }
+                  className="flex-1 rounded-xl bg-blue-600 py-2 font-semibold text-white transition hover:bg-blue-700"
+                >
                   Edit
                 </button>
 
-                <button className="flex-1 rounded-xl bg-red-600 py-2 font-semibold text-white transition hover:bg-red-700">
-                  Delete
+                <button
+                  onClick={() => {
+                    const confirmDelete =
+                      window.confirm(
+                        "Are you sure you want to delete this event?"
+                      );
+
+                    if (!confirmDelete) return;
+
+                    deleteMutation.mutate(
+                      event._id
+                    );
+                  }}
+                  disabled={deleteMutation.isPending}
+                  className="flex-1 rounded-xl bg-red-600 py-2 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {deleteMutation.isPending
+                    ? "Deleting..."
+                    : "Delete"}
                 </button>
               </div>
             </div>
