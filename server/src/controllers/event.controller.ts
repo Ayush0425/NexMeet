@@ -9,6 +9,7 @@ import {
   getEventByIdService,
   updateEventService,
   deleteEventService,
+   getMyEventsService,
 } from "../services/event.service";
 
 import { getAllEvents } from "../repositories/event.repository";
@@ -71,6 +72,23 @@ export const fetchAllEvents = asyncHandler(
   }
 );
 
+// ==========================
+// Get My Events
+// ==========================
+export const getMyEvents = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const events =
+      await getMyEventsService(
+        req.user!._id.toString()
+      );
+
+    return res.status(200).json({
+      success: true,
+      count: events.length,
+      data: events,
+    });
+  }
+);
 // ==========================
 // Get Event By ID
 // ==========================

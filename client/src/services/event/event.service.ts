@@ -40,3 +40,14 @@ export const createEvent = async (
 
   return response.data;
 };
+
+// ======================
+// Get My Events
+// ======================
+export const getMyEvents = async () => {
+  const response = await api.get(
+    "/events/my-events"
+  );
+
+  return response.data;
+};

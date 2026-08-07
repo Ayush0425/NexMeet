@@ -6,6 +6,7 @@ import {
   getEventById,
   updateEvent,
   deleteEvent,
+  getEventsByOrganizer,
 } from "../repositories/event.repository";
 
 // ==========================
@@ -41,6 +42,14 @@ export const getEventByIdService = async (
   return event;
 };
 
+export const getMyEventsService = async (
+  organizerId: string
+) => {
+  return await getEventsByOrganizer(
+    organizerId
+  );
+};
+
 // ==========================
 // Update Event
 // ==========================
@@ -67,6 +76,8 @@ export const updateEventService = async (
       403
     );
   }
+
+  
 
   // Update event
   const updatedEvent = await updateEvent(

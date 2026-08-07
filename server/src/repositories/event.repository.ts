@@ -155,3 +155,15 @@ export const increaseAvailableSeats = async (
     }
   );
 };
+// ==========================
+// Get Organizer Events
+// ==========================
+export const getEventsByOrganizer = async (
+  organizerId: string
+) => {
+  return EventModel.find({
+    organizer: organizerId,
+  }).sort({
+    createdAt: -1,
+  });
+};

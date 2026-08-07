@@ -6,6 +6,7 @@ import {
   fetchEventById,
   editEvent,
   removeEvent,
+  getMyEvents,
 } from "../controllers/event.controller";
 
 import { protect } from "../middleware/auth.middleware";
@@ -21,6 +22,12 @@ const router = Router();
 // Get all events
 router.get("/", fetchAllEvents);
 
+router.get(
+  "/my-events",
+  protect,
+  authorize("organizer"),
+  getMyEvents
+);
 // Get single event by ID
 router.get("/:id", fetchEventById);
 
