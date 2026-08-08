@@ -11,18 +11,23 @@ import ForgotPasswordPage from "../pages/ForgotPassword/ForgotPasswordPage";
 import ResetPasswordPage from "../pages/ResetPassword/ResetPasswordPage";
 import EventsPage from "../pages/Events/EventsPage";
 import EventDetailsPage from "../pages/EventDetails/EventDetailsPage";
+
 import DashboardPage from "../pages/Dashboard/DashboardPage";
 import DashboardHome from "../pages/Dashboard/DashboardHome";
 import CreateEventPage from "../pages/Dashboard/CreateEventpage";
 import MyEventsPage from "../pages/Dashboard/MyEventPage";
+import MyBookingsPage from "../pages/Dashboard/MyBookingsPage";
 import ProfilePage from "../pages/Dashboard/Profilepage";
-import NotFoundPage from "../pages/NotFound/NotFoundPage";
 import EditEventPage from "../pages/Dashboard/EditEventPage";
+
+import NotFoundPage from "../pages/NotFound/NotFoundPage";
 
 function AppRoutes() {
   return (
     <Routes>
-      {/* Routes with Navbar & Footer */}
+      {/* ==========================
+          Public Routes
+      ========================== */}
       <Route element={<MainLayout />}>
         <Route path="/" element={<HomePage />} />
 
@@ -37,7 +42,9 @@ function AppRoutes() {
         />
       </Route>
 
-      {/* Authentication Routes */}
+      {/* ==========================
+          Authentication Routes
+      ========================== */}
       <Route
         path="/login"
         element={<LoginPage />}
@@ -58,7 +65,9 @@ function AppRoutes() {
         element={<ResetPasswordPage />}
       />
 
-      {/* Protected Dashboard Routes */}
+      {/* ==========================
+          Protected Dashboard
+      ========================== */}
       <Route
         path="/dashboard"
         element={
@@ -67,33 +76,69 @@ function AppRoutes() {
           </ProtectedRoute>
         }
       >
+        {/* Dashboard Home */}
         <Route
           index
           element={<DashboardHome />}
         />
 
+        {/* ==========================
+            Organizer Only
+        ========================== */}
+
         <Route
           path="create-event"
-          element={<CreateEventPage />}
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <CreateEventPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="my-events"
-          element={<MyEventsPage />}
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <MyEventsPage />
+            </ProtectedRoute>
+          }
         />
 
         <Route
           path="edit-event/:id"
-          element={<EditEventPage />}
+          element={
+            <ProtectedRoute allowedRoles={["organizer"]}>
+              <EditEventPage />
+            </ProtectedRoute>
+          }
         />
+
+        {/* ==========================
+            User Only
+        ========================== */}
+
+        <Route
+          path="my-bookings"
+          element={
+            <ProtectedRoute allowedRoles={["user"]}>
+              <MyBookingsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* ==========================
+            Profile
+        ========================== */}
+
         <Route
           path="profile"
           element={<ProfilePage />}
         />
-
       </Route>
 
-      {/* 404 */}
+      {/* ==========================
+          404
+      ========================== */}
       <Route
         path="*"
         element={<NotFoundPage />}

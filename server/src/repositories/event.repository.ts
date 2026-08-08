@@ -168,3 +168,26 @@ export const getEventsByOrganizer = async (
   });
 };
 
+// ==========================
+// Decrease Available Seats
+// ==========================
+export const decreaseAvailableSeats = async (
+  eventId: string,
+  quantity: number
+) => {
+  return await EventModel.findOneAndUpdate(
+    {
+      _id: eventId,
+      availableSeats: { $gte: quantity },
+    },
+    {
+      $inc: {
+        availableSeats: -quantity,
+      },
+    },
+    {
+      new: true,
+    }
+  );
+};
+

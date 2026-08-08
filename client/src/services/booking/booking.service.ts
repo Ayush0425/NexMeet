@@ -1,23 +1,26 @@
 import api from "../../lib/axios";
 
-// ======================
+// ==========================
 // Create Booking
-// ======================
-export const createBooking = async (data: {
-  eventId: string;
-  quantity: number;
-}) => {
+// ==========================
+export const createBooking = async (
+  eventId: string,
+  quantity: number
+) => {
   const response = await api.post(
     "/bookings",
-    data
+    {
+      eventId,
+      quantity,
+    }
   );
 
   return response.data;
 };
 
-// ======================
+// ==========================
 // Get My Bookings
-// ======================
+// ==========================
 export const getMyBookings = async () => {
   const response = await api.get(
     "/bookings/my"
@@ -26,9 +29,9 @@ export const getMyBookings = async () => {
   return response.data;
 };
 
-// ======================
+// ==========================
 // Cancel Booking
-// ======================
+// ==========================
 export const cancelBooking = async (
   bookingId: string
 ) => {

@@ -7,26 +7,31 @@ const bookingSchema = new Schema(
       ref: "User",
       required: true,
     },
+
     event: {
       type: Schema.Types.ObjectId,
       ref: "Event",
       required: true,
     },
+
     quantity: {
       type: Number,
       required: true,
       min: 1,
     },
+
     totalPrice: {
       type: Number,
       required: true,
       min: 0,
     },
- bookingStatus: {
-  type: String,
-  enum: ["pending", "confirmed", "cancelled"],
-  default: "pending",
-},
+
+    bookingStatus: {
+      type: String,
+      enum: ["pending", "confirmed", "cancelled"],
+      default: "pending",
+    },
+
     paymentStatus: {
       type: String,
       enum: ["pending", "paid", "failed"],
@@ -38,4 +43,17 @@ const bookingSchema = new Schema(
   }
 );
 
-export default mongoose.model("Booking", bookingSchema);
+// Faster queries for My Bookings
+bookingSchema.index({
+  user: 1,
+  createdAt: -1,
+});
+
+bookingSchema.index({
+  event: 1,
+});
+
+export default mongoose.model(
+  "Booking",
+  bookingSchema
+);

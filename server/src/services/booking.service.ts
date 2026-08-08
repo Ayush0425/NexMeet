@@ -11,7 +11,7 @@ import {
 
 import {
   getEventById,
-  updateAvailableSeats,
+  decreaseAvailableSeats,
   increaseAvailableSeats,
 } from "../repositories/event.repository";
 
@@ -25,10 +25,23 @@ export const createBookingService = async (
   userId: string
 ) => {
   // Find Event
-  const event = await getEventById(bookingData.eventId);
+  const event = await getEventById(
+    bookingData.eventId
+  );
 
   if (!event) {
     throw new AppError("Event not found", 404);
+  }
+
+  // Prevent booking cancelled/completed events
+  if (
+    event.status === "cancelled" ||
+    event.status === "completed"
+  ) {
+    throw new AppError(
+      "This event is not available for booking",
+      400
+    );
   }
 
   // Prevent Duplicate Booking
@@ -44,26 +57,24 @@ export const createBookingService = async (
     );
   }
 
-  // Check Seat Availability
-  if (event.availableSeats < bookingData.quantity) {
+  // Calculate Total Price
+  const totalPrice =
+    event.price * bookingData.quantity;
+
+  // Atomically decrease available seats
+  const updatedEvent =
+    await decreaseAvailableSeats(
+      bookingData.eventId,
+      bookingData.quantity
+    );
+
+  // If null, there weren't enough seats
+  if (!updatedEvent) {
     throw new AppError(
       "Not enough seats available",
       400
     );
   }
-
-  // Calculate Total Price
-  const totalPrice =
-    event.price * bookingData.quantity;
-
-  // Update Available Seats
-  const remainingSeats =
-    event.availableSeats - bookingData.quantity;
-
-  await updateAvailableSeats(
-    event._id.toString(),
-    remainingSeats
-  );
 
   // Create Booking
   const booking = await createBooking({
@@ -86,7 +97,8 @@ export const getMyBookingsService = async (
 };
 
 // ==========================
-// Get Bookings By Event (Organizer)
+// Get Bookings By Event
+// Organizer
 // ==========================
 export const getBookingsByEventService = async (
   eventId: string,
@@ -95,11 +107,19 @@ export const getBookingsByEventService = async (
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new AppError("Event not found", 404);
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
+  // Get organizer ID safely
+  const organizerId =
+    (event.organizer as any)._id?.toString() ??
+    event.organizer.toString();
+
   // Only organizer can view bookings
-  if (event.organizer._id.toString() !== userId) {
+  if (organizerId !== userId) {
     throw new AppError(
       "You are not authorized to view these bookings",
       403
@@ -117,14 +137,21 @@ export const cancelBookingService = async (
   userId: string
 ) => {
   // Find Booking
-  const booking = await getBookingById(bookingId);
+  const booking = await getBookingById(
+    bookingId
+  );
 
   if (!booking) {
-    throw new AppError("Booking not found", 404);
+    throw new AppError(
+      "Booking not found",
+      404
+    );
   }
 
   // Check Ownership
-  if (booking.user.toString() !== userId) {
+  if (
+    booking.user.toString() !== userId
+  ) {
     throw new AppError(
       "You are not authorized to cancel this booking",
       403
@@ -132,7 +159,9 @@ export const cancelBookingService = async (
   }
 
   // Already Cancelled
-  if (booking.bookingStatus === "cancelled") {
+  if (
+    booking.bookingStatus === "cancelled"
+  ) {
     throw new AppError(
       "Booking is already cancelled",
       400
@@ -146,9 +175,8 @@ export const cancelBookingService = async (
   );
 
   // Cancel Booking
-  const updatedBooking = await cancelBooking(
-    bookingId
-  );
+  const updatedBooking =
+    await cancelBooking(bookingId);
 
   return updatedBooking;
 };

@@ -1,28 +1,33 @@
-import { Response } from "express";
+import { Request, Response } from "express";
+
 import { asyncHandler } from "../middleware/asyncHandler";
-import { createBookingSchema } from "../validators/booking.validator";
+import { AuthRequest } from "../types/request.types";
+
 import {
   createBookingService,
   getMyBookingsService,
+  getBookingsByEventService,
   cancelBookingService,
 } from "../services/booking.service";
-import { AuthRequest } from "../types/request.types";
+
+import { createBookingSchema } from "../validators/booking.validator";
 
 // ==========================
-// Book Event
+// Create Booking
 // ==========================
-export const bookEvent = asyncHandler(
+export const createBooking = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const bookingData = createBookingSchema.parse(req.body);
+    const validatedData =
+      createBookingSchema.parse(req.body);
 
     const booking = await createBookingService(
-      bookingData,
+      validatedData,
       req.user!._id.toString()
     );
 
-    res.status(201).json({
+    return res.status(201).json({
       success: true,
-      message: "Booking created successfully",
+      message: "Event booked successfully",
       data: booking,
     });
   }
@@ -33,11 +38,32 @@ export const bookEvent = asyncHandler(
 // ==========================
 export const getMyBookings = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-    const bookings = await getMyBookingsService(
-      req.user!._id.toString()
-    );
+    const bookings =
+      await getMyBookingsService(
+        req.user!._id.toString()
+      );
 
-    res.status(200).json({
+    return res.status(200).json({
+      success: true,
+      count: bookings.length,
+      data: bookings,
+    });
+  }
+);
+
+// ==========================
+// Get Event Bookings
+// Organizer
+// ==========================
+export const getEventBookings = asyncHandler(
+  async (req: AuthRequest, res: Response) => {
+    const bookings =
+      await getBookingsByEventService(
+        String(req.params.eventId),
+        req.user!._id.toString()
+      );
+
+    return res.status(200).json({
       success: true,
       count: bookings.length,
       data: bookings,
@@ -50,12 +76,13 @@ export const getMyBookings = asyncHandler(
 // ==========================
 export const cancelBooking = asyncHandler(
   async (req: AuthRequest, res: Response) => {
-const booking = await cancelBookingService(
-  String(req.params.bookingId),
-  req.user!._id.toString()
-);
+    const booking =
+      await cancelBookingService(
+        String(req.params.id),
+        req.user!._id.toString()
+      );
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Booking cancelled successfully",
       data: booking,

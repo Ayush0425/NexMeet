@@ -9,4 +9,5 @@ export const createBookingSchema = z.object({
     .min(1, "At least one ticket is required"),
 });
 
-export type CreateBookingInput = z.infer<typeof createBookingSchema>;
+export type CreateBookingInput =
+  z.infer<typeof createBookingSchema>;
