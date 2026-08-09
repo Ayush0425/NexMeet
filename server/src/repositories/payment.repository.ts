@@ -7,8 +7,43 @@ interface CreatePaymentData {
   amount: number;
 }
 
+// ==========================
+// Create Payment
+// ==========================
 export const createPayment = async (
   paymentData: CreatePaymentData
 ) => {
   return await PaymentModel.create(paymentData);
+};
+
+// ==========================
+// Get Payment By Order ID
+// ==========================
+export const getPaymentByOrderId = async (
+  razorpayOrderId: string
+) => {
+  return await PaymentModel.findOne({
+    razorpayOrderId,
+  });
+};
+
+// ==========================
+// Update Payment
+// ==========================
+export const updatePayment = async (
+  paymentId: string,
+  updateData: {
+    razorpayPaymentId?: string;
+    razorpaySignature?: string;
+    status?: "created" | "paid" | "failed" | "refunded";
+  }
+) => {
+  return await PaymentModel.findByIdAndUpdate(
+    paymentId,
+    updateData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 };

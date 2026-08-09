@@ -1,16 +1,28 @@
 import BookingModel from "../models/booking.model";
 
+// ==========================
+// Create Booking
+// ==========================
 export const createBooking = async (bookingData: {
   user: string;
   event: string;
   quantity: number;
   totalPrice: number;
 }) => {
-  return await BookingModel.create(bookingData);
+  return await BookingModel.create(
+    bookingData
+  );
 };
 
-export const getBookingsByUser = async (userId: string) => {
-  return await BookingModel.find({ user: userId })
+// ==========================
+// Get Bookings By User
+// ==========================
+export const getBookingsByUser = async (
+  userId: string
+) => {
+  return await BookingModel.find({
+    user: userId,
+  })
     .populate({
       path: "event",
       select:
@@ -25,7 +37,37 @@ export const getBookingsByUser = async (userId: string) => {
 export const getBookingById = async (
   bookingId: string
 ) => {
-  return await BookingModel.findById(bookingId);
+  return await BookingModel.findById(
+    bookingId
+  );
+};
+
+// ==========================
+// Update Booking Payment Status
+// ==========================
+export const updateBookingPaymentStatus = async (
+  bookingId: string,
+  paymentStatus: "pending" | "paid" | "failed"
+) => {
+  const updateData: {
+    paymentStatus: "pending" | "paid" | "failed";
+    bookingStatus?: "pending" | "confirmed" | "cancelled";
+  } = {
+    paymentStatus,
+  };
+
+  if (paymentStatus === "paid") {
+    updateData.bookingStatus = "confirmed";
+  }
+
+  return await BookingModel.findByIdAndUpdate(
+    bookingId,
+    updateData,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
 };
 
 // ==========================

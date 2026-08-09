@@ -1,27 +1,68 @@
 import crypto from "crypto";
 
 import razorpay from "../utils/razorpay";
-import { createPayment } from "../repositories/payment.repository";
-import { getBookingById } from "../repositories/booking.repository";
+
+import {
+  createPayment,
+  getPaymentByOrderId,
+  updatePayment,
+} from "../repositories/payment.repository";
+
+import {
+  getBookingById,
+  updateBookingPaymentStatus,
+} from "../repositories/booking.repository";
+
 import { AppError } from "../utils/AppError";
+
 import { VerifyPaymentInput } from "../validators/payment.validator";
 
+// =========================
+// Create Razorpay Order
+// =========================
 export const createOrderService = async (
   bookingId: string,
   userId: string
 ) => {
   // Find booking
-  const booking = await getBookingById(bookingId);
+  const booking = await getBookingById(
+    bookingId
+  );
 
   if (!booking) {
-    throw new AppError("Booking not found", 404);
+    throw new AppError(
+      "Booking not found",
+      404
+    );
   }
 
   // Check ownership
-  if (booking.user.toString() !== userId) {
+  if (
+    booking.user.toString() !== userId
+  ) {
     throw new AppError(
       "You are not authorized to pay for this booking",
       403
+    );
+  }
+
+  // Prevent payment for cancelled booking
+  if (
+    booking.bookingStatus === "cancelled"
+  ) {
+    throw new AppError(
+      "Cannot pay for a cancelled booking",
+      400
+    );
+  }
+
+  // Prevent duplicate payment
+  if (
+    booking.paymentStatus === "paid"
+  ) {
+    throw new AppError(
+      "Booking is already paid",
+      400
     );
   }
 
@@ -30,7 +71,7 @@ export const createOrderService = async (
 
   // Create Razorpay Order
   const order = await razorpay.orders.create({
-    amount: amount * 100, // Razorpay expects paise
+    amount: amount * 100,
     currency: "INR",
     receipt: `booking_${bookingId}`,
   });
@@ -52,7 +93,6 @@ export const createOrderService = async (
 // =========================
 // Verify Payment
 // =========================
-
 export const verifyPaymentService = async (
   data: VerifyPaymentInput
 ) => {
@@ -62,23 +102,106 @@ export const verifyPaymentService = async (
     razorpay_signature,
   } = data;
 
-  const generatedSignature = crypto
-    .createHmac(
-      "sha256",
-      process.env.RAZORPAY_KEY_SECRET!
-    )
-    .update(`${razorpay_order_id}|${razorpay_payment_id}`)
-    .digest("hex");
+  // Find payment record
+  const payment =
+    await getPaymentByOrderId(
+      razorpay_order_id
+    );
 
-  if (generatedSignature !== razorpay_signature) {
-    throw new AppError("Invalid payment signature", 400);
+  if (!payment) {
+    throw new AppError(
+      "Payment record not found",
+      404
+    );
   }
 
-  // We will update Payment, Booking and Event
-  // in the next step.
+  // Find booking
+  const booking = await getBookingById(
+    payment.booking.toString()
+  );
+
+  if (!booking) {
+    throw new AppError(
+      "Booking not found",
+      404
+    );
+  }
+
+  // Make sure payment belongs to booking user
+  if (
+    payment.user.toString() !==
+    booking.user.toString()
+  ) {
+    throw new AppError(
+      "Invalid payment ownership",
+      403
+    );
+  }
+
+  // Generate Razorpay signature
+  const generatedSignature =
+    crypto
+      .createHmac(
+        "sha256",
+        process.env.RAZORPAY_KEY_SECRET!
+      )
+      .update(
+        `${razorpay_order_id}|${razorpay_payment_id}`
+      )
+      .digest("hex");
+
+  // Verify signature
+  if (
+    generatedSignature !==
+    razorpay_signature
+  ) {
+    await updatePayment(
+      payment._id.toString(),
+      {
+        razorpayPaymentId:
+          razorpay_payment_id,
+        razorpaySignature:
+          razorpay_signature,
+        status: "failed",
+      }
+    );
+
+    await updateBookingPaymentStatus(
+      booking._id.toString(),
+      "failed"
+    );
+
+    throw new AppError(
+      "Invalid payment signature",
+      400
+    );
+  }
+
+  // Update Payment → PAID
+  const updatedPayment =
+    await updatePayment(
+      payment._id.toString(),
+      {
+        razorpayPaymentId:
+          razorpay_payment_id,
+        razorpaySignature:
+          razorpay_signature,
+        status: "paid",
+      }
+    );
+
+  // Update Booking → CONFIRMED
+  const updatedBooking =
+    await updateBookingPaymentStatus(
+      booking._id.toString(),
+      "paid"
+    );
 
   return {
     success: true,
-    message: "Payment verified successfully",
+    message:
+      "Payment verified successfully",
+    payment: updatedPayment,
+    booking: updatedBooking,
   };
 };
