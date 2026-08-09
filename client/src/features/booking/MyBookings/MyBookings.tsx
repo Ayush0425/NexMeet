@@ -1,7 +1,17 @@
-import { useQuery } from "@tanstack/react-query";
-import { getMyBookings } from "../../../services/booking/booking.service";
+import {
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
+
+import {
+  cancelBooking,
+  getMyBookings,
+} from "../../../services/booking/booking.service";
 
 function MyBookings() {
+  const queryClient = useQueryClient();
+
   const {
     data,
     isLoading,
@@ -10,6 +20,41 @@ function MyBookings() {
     queryKey: ["my-bookings"],
     queryFn: getMyBookings,
   });
+
+  const cancelMutation = useMutation({
+    mutationFn: cancelBooking,
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ["my-bookings"],
+      });
+
+      alert("Booking cancelled successfully!");
+    },
+
+    onError: (error: any) => {
+      console.error(error);
+
+      alert(
+        error?.response?.data?.message ||
+          "Failed to cancel booking"
+      );
+    },
+  });
+
+  const handleCancelBooking = (
+    bookingId: string
+  ) => {
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel this booking?"
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
+    cancelMutation.mutate(bookingId);
+  };
 
   if (isLoading) {
     return (
@@ -104,7 +149,7 @@ function MyBookings() {
               </div>
 
               {/* Status */}
-              <div className="flex gap-3 pt-2">
+              <div className="flex flex-wrap gap-3 pt-2">
                 <span
                   className={`rounded-full px-3 py-1 text-sm font-medium ${
                     booking.bookingStatus ===
@@ -130,10 +175,39 @@ function MyBookings() {
                       : "bg-yellow-500/20 text-yellow-400"
                   }`}
                 >
-                  Payment:{" "}
-                  {booking.paymentStatus}
+                  Payment: {booking.paymentStatus}
                 </span>
               </div>
+
+              {/* Cancel Booking */}
+              {booking.bookingStatus !==
+                "cancelled" && (
+                <button
+                  type="button"
+                  onClick={() =>
+                    handleCancelBooking(
+                      booking._id
+                    )
+                  }
+                  disabled={
+                    cancelMutation.isPending
+                  }
+                  className="w-full rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  {cancelMutation.isPending
+                    ? "Cancelling..."
+                    : "Cancel Booking"}
+                </button>
+              )}
+
+              {/* Cancelled Message */}
+              {booking.bookingStatus ===
+                "cancelled" && (
+                <div className="rounded-xl bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
+                  This booking has been
+                  cancelled.
+                </div>
+              )}
             </div>
           </div>
         ))}
