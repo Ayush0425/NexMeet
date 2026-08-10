@@ -20,6 +20,8 @@ import MyBookingsPage from "../pages/Dashboard/MyBookingsPage";
 import ProfilePage from "../pages/Dashboard/Profilepage";
 import EditEventPage from "../pages/Dashboard/EditEventPage";
 
+import EventBookings from "../features/booking/EventBookings/EventBookings";
+
 import NotFoundPage from "../pages/NotFound/NotFoundPage";
 
 function AppRoutes() {
@@ -89,7 +91,9 @@ function AppRoutes() {
         <Route
           path="create-event"
           element={
-            <ProtectedRoute allowedRoles={["organizer"]}>
+            <ProtectedRoute
+              allowedRoles={["organizer"]}
+            >
               <CreateEventPage />
             </ProtectedRoute>
           }
@@ -98,8 +102,21 @@ function AppRoutes() {
         <Route
           path="my-events"
           element={
-            <ProtectedRoute allowedRoles={["organizer"]}>
+            <ProtectedRoute
+              allowedRoles={["organizer"]}
+            >
               <MyEventsPage />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="event-bookings/:eventId"
+          element={
+            <ProtectedRoute
+              allowedRoles={["organizer"]}
+            >
+              <EventBookings />
             </ProtectedRoute>
           }
         />
@@ -107,7 +124,9 @@ function AppRoutes() {
         <Route
           path="edit-event/:id"
           element={
-            <ProtectedRoute allowedRoles={["organizer"]}>
+            <ProtectedRoute
+              allowedRoles={["organizer"]}
+            >
               <EditEventPage />
             </ProtectedRoute>
           }
@@ -120,7 +139,9 @@ function AppRoutes() {
         <Route
           path="my-bookings"
           element={
-            <ProtectedRoute allowedRoles={["user"]}>
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
               <MyBookingsPage />
             </ProtectedRoute>
           }

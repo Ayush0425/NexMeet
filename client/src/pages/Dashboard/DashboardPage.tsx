@@ -5,10 +5,14 @@ import DashboardSidebar from "../../features/dashboard/DashboardSidebar/Dashboar
 function DashboardPage() {
   return (
     <main className="flex min-h-screen bg-[#0B1120]">
-      {/* Sidebar */}
+      {/* ==========================
+          Sidebar
+      ========================== */}
       <DashboardSidebar />
 
-      {/* Main Content */}
+      {/* ==========================
+          Main Content
+      ========================== */}
       <section className="flex-1 overflow-y-auto p-10">
         <Outlet />
       </section>

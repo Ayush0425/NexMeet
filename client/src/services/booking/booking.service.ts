@@ -41,3 +41,17 @@ export const cancelBooking = async (
 
   return response.data;
 };
+
+// ==========================
+// Get Bookings By Event
+// Organizer
+// ==========================
+export const getBookingsByEvent = async (
+  eventId: string
+) => {
+  const response = await api.get(
+    `/bookings/event/${eventId}`
+  );
+
+  return response.data;
+};
