@@ -27,10 +27,11 @@ export const createOrder = async (
       });
     }
 
-    const result = await createOrderService(
-      bookingId,
-      req.user!._id.toString()
-    );
+    const result =
+      await createOrderService(
+        bookingId,
+        req.user!._id.toString()
+      );
 
     return res.status(201).json({
       success: true,
@@ -65,7 +66,8 @@ export const verifyPayment = async (
 
     const result =
       await verifyPaymentService(
-        validatedData
+        validatedData,
+        req.user!._id.toString()
       );
 
     return res.status(200).json({

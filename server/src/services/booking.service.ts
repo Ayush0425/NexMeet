@@ -1,4 +1,5 @@
 import { AppError } from "../utils/AppError";
+import mongoose from "mongoose";
 
 import {
   createBooking,
@@ -30,7 +31,10 @@ export const createBookingService = async (
   );
 
   if (!event) {
-    throw new AppError("Event not found", 404);
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   // Prevent booking cancelled/completed events
@@ -45,10 +49,11 @@ export const createBookingService = async (
   }
 
   // Prevent Duplicate Booking
-  const existingBooking = await findActiveBooking(
-    userId,
-    bookingData.eventId
-  );
+  const existingBooking =
+    await findActiveBooking(
+      userId,
+      bookingData.eventId
+    );
 
   if (existingBooking) {
     throw new AppError(
@@ -61,30 +66,56 @@ export const createBookingService = async (
   const totalPrice =
     event.price * bookingData.quantity;
 
-  // Atomically decrease available seats
-  const updatedEvent =
-    await decreaseAvailableSeats(
-      bookingData.eventId,
-      bookingData.quantity
-    );
+  // ==========================
+  // Start Transaction
+  // ==========================
+  const session =
+    await mongoose.startSession();
 
-  // If null, there weren't enough seats
-  if (!updatedEvent) {
-    throw new AppError(
-      "Not enough seats available",
-      400
-    );
+  try {
+    session.startTransaction();
+
+    // Atomically decrease available seats
+    const updatedEvent =
+      await decreaseAvailableSeats(
+        bookingData.eventId,
+        bookingData.quantity,
+        session
+      );
+
+    // Not enough seats
+    if (!updatedEvent) {
+      throw new AppError(
+        "Not enough seats available",
+        400
+      );
+    }
+
+    // Create Booking
+    const booking =
+      await createBooking(
+        {
+          user: userId,
+          event: bookingData.eventId,
+          quantity: bookingData.quantity,
+          totalPrice,
+        },
+        session
+      );
+
+    // Commit transaction
+    await session.commitTransaction();
+
+    return booking;
+  } catch (error) {
+    // Rollback everything
+    await session.abortTransaction();
+
+    throw error;
+  } finally {
+    // Always close session
+    await session.endSession();
   }
-
-  // Create Booking
-  const booking = await createBooking({
-    user: userId,
-    event: bookingData.eventId,
-    quantity: bookingData.quantity,
-    totalPrice,
-  });
-
-  return booking;
 };
 
 // ==========================
@@ -100,34 +131,38 @@ export const getMyBookingsService = async (
 // Get Bookings By Event
 // Organizer
 // ==========================
-export const getBookingsByEventService = async (
-  eventId: string,
-  userId: string
-) => {
-  const event = await getEventById(eventId);
+export const getBookingsByEventService =
+  async (
+    eventId: string,
+    userId: string
+  ) => {
+    const event =
+      await getEventById(eventId);
 
-  if (!event) {
-    throw new AppError(
-      "Event not found",
-      404
+    if (!event) {
+      throw new AppError(
+        "Event not found",
+        404
+      );
+    }
+
+    // Get organizer ID safely
+    const organizerId =
+      (event.organizer as any)._id?.toString() ??
+      event.organizer.toString();
+
+    // Only organizer can view bookings
+    if (organizerId !== userId) {
+      throw new AppError(
+        "You are not authorized to view these bookings",
+        403
+      );
+    }
+
+    return await getBookingsByEvent(
+      eventId
     );
-  }
-
-  // Get organizer ID safely
-  const organizerId =
-    (event.organizer as any)._id?.toString() ??
-    event.organizer.toString();
-
-  // Only organizer can view bookings
-  if (organizerId !== userId) {
-    throw new AppError(
-      "You are not authorized to view these bookings",
-      403
-    );
-  }
-
-  return await getBookingsByEvent(eventId);
-};
+  };
 
 // ==========================
 // Cancel Booking
@@ -137,9 +172,8 @@ export const cancelBookingService = async (
   userId: string
 ) => {
   // Find Booking
-  const booking = await getBookingById(
-    bookingId
-  );
+  const booking =
+    await getBookingById(bookingId);
 
   if (!booking) {
     throw new AppError(

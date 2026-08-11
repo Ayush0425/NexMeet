@@ -1,17 +1,23 @@
+import mongoose from "mongoose";
 import BookingModel from "../models/booking.model";
 
 // ==========================
 // Create Booking
 // ==========================
-export const createBooking = async (bookingData: {
-  user: string;
-  event: string;
-  quantity: number;
-  totalPrice: number;
-}) => {
+
+export const createBooking = async (
+  bookingData: {
+    user: string;
+    event: string;
+    quantity: number;
+    totalPrice: number;
+  },
+  session?: mongoose.ClientSession
+) => {
   return await BookingModel.create(
-    bookingData
-  );
+    [bookingData],
+    { session }
+  ).then((bookings) => bookings[0]);
 };
 
 // ==========================

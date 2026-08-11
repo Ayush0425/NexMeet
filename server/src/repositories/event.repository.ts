@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import EventModel from "../models/event.model";
 import { CreateEventInput } from "../validators/event.validator";
 
@@ -173,7 +174,8 @@ export const getEventsByOrganizer = async (
 // ==========================
 export const decreaseAvailableSeats = async (
   eventId: string,
-  quantity: number
+  quantity: number,
+  session?: mongoose.ClientSession
 ) => {
   return await EventModel.findOneAndUpdate(
     {
@@ -187,6 +189,7 @@ export const decreaseAvailableSeats = async (
     },
     {
       new: true,
+      session,
     }
   );
 };

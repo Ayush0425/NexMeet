@@ -13,7 +13,9 @@ interface CreatePaymentData {
 export const createPayment = async (
   paymentData: CreatePaymentData
 ) => {
-  return await PaymentModel.create(paymentData);
+  return await PaymentModel.create(
+    paymentData
+  );
 };
 
 // ==========================
@@ -28,6 +30,17 @@ export const getPaymentByOrderId = async (
 };
 
 // ==========================
+// Get Active Payment By Booking
+// ==========================
+export const getActivePaymentByBooking =
+  async (bookingId: string) => {
+    return await PaymentModel.findOne({
+      booking: bookingId,
+      status: "created",
+    });
+  };
+
+// ==========================
 // Update Payment
 // ==========================
 export const updatePayment = async (
@@ -35,7 +48,11 @@ export const updatePayment = async (
   updateData: {
     razorpayPaymentId?: string;
     razorpaySignature?: string;
-    status?: "created" | "paid" | "failed" | "refunded";
+    status?:
+      | "created"
+      | "paid"
+      | "failed"
+      | "refunded";
   }
 ) => {
   return await PaymentModel.findByIdAndUpdate(
