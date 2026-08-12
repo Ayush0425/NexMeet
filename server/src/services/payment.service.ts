@@ -14,6 +14,8 @@ import {
   updateBookingPaymentStatus,
 } from "../repositories/booking.repository";
 
+import { generateTicketsService } from "./ticket.service";
+
 import { AppError } from "../utils/AppError";
 
 import { VerifyPaymentInput } from "../validators/payment.validator";
@@ -26,9 +28,8 @@ export const createOrderService = async (
   userId: string
 ) => {
   // Find booking
-  const booking = await getBookingById(
-    bookingId
-  );
+  const booking =
+    await getBookingById(bookingId);
 
   if (!booking) {
     throw new AppError(
@@ -103,11 +104,12 @@ export const createOrderService = async (
   // =========================
   // Create Razorpay Order
   // =========================
-  const order = await razorpay.orders.create({
-    amount: amount * 100,
-    currency: "INR",
-    receipt: `booking_${bookingId}`,
-  });
+  const order =
+    await razorpay.orders.create({
+      amount: amount * 100,
+      currency: "INR",
+      receipt: `booking_${bookingId}`,
+    });
 
   // Save payment
   const payment = await createPayment({
@@ -253,11 +255,20 @@ export const verifyPaymentService = async (
       "paid"
     );
 
+  // =========================
+  // Generate Tickets
+  // =========================
+  const tickets =
+    await generateTicketsService(
+      booking._id.toString()
+    );
+
   return {
     success: true,
     message:
       "Payment verified successfully",
     payment: updatedPayment,
     booking: updatedBooking,
+    tickets,
   };
 };

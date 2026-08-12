@@ -15,7 +15,8 @@ import { useAuth } from "../../../context/auth/AuthContext";
 function DashboardSidebar() {
   const { user } = useAuth();
 
-  const isOrganizer = user?.role?.toLowerCase() === "organizer";
+  const isOrganizer =
+    user?.role?.toLowerCase() === "organizer";
 
   return (
     <aside className="flex min-h-screen w-64 flex-col border-r border-slate-800 bg-[#0B1120]">
@@ -26,7 +27,9 @@ function DashboardSidebar() {
         </h1>
 
         <p className="mt-1 text-sm text-slate-400">
-          {isOrganizer ? "Organizer Panel" : "User Panel"}
+          {isOrganizer
+            ? "Organizer Panel"
+            : "User Panel"}
         </p>
       </div>
 
@@ -48,7 +51,9 @@ function DashboardSidebar() {
           Dashboard
         </NavLink>
 
-        {/* Organizer Navigation */}
+        {/* ==========================
+            Organizer Navigation
+        ========================== */}
         {isOrganizer && (
           <>
             <NavLink
@@ -81,21 +86,41 @@ function DashboardSidebar() {
           </>
         )}
 
-        {/* Normal User Navigation */}
+        {/* ==========================
+            Normal User Navigation
+        ========================== */}
         {!isOrganizer && (
-          <NavLink
-            to="/dashboard/my-bookings"
-            className={({ isActive }) =>
-              `flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition ${
-                isActive
-                  ? "bg-emerald-500 text-white"
-                  : "text-slate-300 hover:bg-slate-800 hover:text-white"
-              }`
-            }
-          >
-            <Ticket size={20} />
-            My Bookings
-          </NavLink>
+          <>
+            {/* My Bookings */}
+            <NavLink
+              to="/dashboard/my-bookings"
+              className={({ isActive }) =>
+                `flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition ${
+                  isActive
+                    ? "bg-emerald-500 text-white"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              <Ticket size={20} />
+              My Bookings
+            </NavLink>
+
+            {/* My Tickets */}
+            <NavLink
+              to="/dashboard/my-tickets"
+              className={({ isActive }) =>
+                `flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition ${
+                  isActive
+                    ? "bg-emerald-500 text-white"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              <Ticket size={20} />
+              My Tickets
+            </NavLink>
+          </>
         )}
 
         {/* Profile */}

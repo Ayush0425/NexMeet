@@ -19,6 +19,7 @@ import MyEventsPage from "../pages/Dashboard/MyEventPage";
 import MyBookingsPage from "../pages/Dashboard/MyBookingsPage";
 import ProfilePage from "../pages/Dashboard/Profilepage";
 import EditEventPage from "../pages/Dashboard/EditEventPage";
+import MyTicketsPage from "../pages/Dashboard/MyTicketsPage";
 
 import EventBookings from "../features/booking/EventBookings/EventBookings";
 
@@ -31,7 +32,10 @@ function AppRoutes() {
           Public Routes
       ========================== */}
       <Route element={<MainLayout />}>
-        <Route path="/" element={<HomePage />} />
+        <Route
+          path="/"
+          element={<HomePage />}
+        />
 
         <Route
           path="/events"
@@ -47,6 +51,7 @@ function AppRoutes() {
       {/* ==========================
           Authentication Routes
       ========================== */}
+
       <Route
         path="/login"
         element={<LoginPage />}
@@ -70,6 +75,7 @@ function AppRoutes() {
       {/* ==========================
           Protected Dashboard
       ========================== */}
+
       <Route
         path="/dashboard"
         element={
@@ -79,6 +85,7 @@ function AppRoutes() {
         }
       >
         {/* Dashboard Home */}
+
         <Route
           index
           element={<DashboardHome />}
@@ -147,6 +154,19 @@ function AppRoutes() {
           }
         />
 
+        {/* My Tickets */}
+
+        <Route
+          path="my-tickets"
+          element={
+            <ProtectedRoute
+              allowedRoles={["user"]}
+            >
+              <MyTicketsPage />
+            </ProtectedRoute>
+          }
+        />
+
         {/* ==========================
             Profile
         ========================== */}
@@ -160,6 +180,7 @@ function AppRoutes() {
       {/* ==========================
           404
       ========================== */}
+
       <Route
         path="*"
         element={<NotFoundPage />}
