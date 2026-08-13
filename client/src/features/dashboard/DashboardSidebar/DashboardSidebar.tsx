@@ -3,6 +3,7 @@ import {
   LayoutDashboard,
   ListChecks,
   LogOut,
+  QrCode,
   Ticket,
   User,
 } from "lucide-react";
@@ -82,6 +83,21 @@ function DashboardSidebar() {
             >
               <ListChecks size={20} />
               My Events
+            </NavLink>
+
+            {/* Check-in */}
+            <NavLink
+              to="/dashboard/check-in"
+              className={({ isActive }) =>
+                `flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition ${
+                  isActive
+                    ? "bg-emerald-500 text-white"
+                    : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                }`
+              }
+            >
+              <QrCode size={20} />
+              Check-in
             </NavLink>
           </>
         )}

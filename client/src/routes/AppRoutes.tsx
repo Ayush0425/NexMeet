@@ -20,6 +20,7 @@ import MyBookingsPage from "../pages/Dashboard/MyBookingsPage";
 import ProfilePage from "../pages/Dashboard/Profilepage";
 import EditEventPage from "../pages/Dashboard/EditEventPage";
 import MyTicketsPage from "../pages/Dashboard/MyTicketsPage";
+import CheckInPage from "../pages/Dashboard/CheckInPage";
 
 import EventBookings from "../features/booking/EventBookings/EventBookings";
 
@@ -135,6 +136,19 @@ function AppRoutes() {
               allowedRoles={["organizer"]}
             >
               <EditEventPage />
+            </ProtectedRoute>
+          }
+        />
+
+        {/* Check-in */}
+
+        <Route
+          path="check-in"
+          element={
+            <ProtectedRoute
+              allowedRoles={["organizer"]}
+            >
+              <CheckInPage />
             </ProtectedRoute>
           }
         />

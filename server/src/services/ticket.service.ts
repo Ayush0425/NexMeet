@@ -5,9 +5,13 @@ import {
   createTicket,
   getTicketsByBooking,
   getTicketsByUser,
+  getTicketByCode,
+  checkInTicket,
 } from "../repositories/ticket.repository";
 
 import { getBookingById } from "../repositories/booking.repository";
+
+import { getEventById } from "../repositories/event.repository";
 
 import { AppError } from "../utils/AppError";
 
@@ -105,4 +109,89 @@ export const getMyTicketsService =
     return await getTicketsByUser(
       userId
     );
+  };
+
+// ==========================
+// Check In Ticket
+// ==========================
+export const checkInTicketService =
+  async (
+    ticketCode: string,
+    organizerId: string
+  ) => {
+    // Find ticket
+    const ticket =
+      await getTicketByCode(
+        ticketCode
+      );
+
+    if (!ticket) {
+      throw new AppError(
+        "Ticket not found",
+        404
+      );
+    }
+
+    // Prevent already used ticket
+    if (ticket.status === "used") {
+      throw new AppError(
+        "Ticket has already been used",
+        400
+      );
+    }
+
+    // Prevent cancelled ticket
+    if (
+      ticket.status === "cancelled"
+    ) {
+      throw new AppError(
+        "Ticket has been cancelled",
+        400
+      );
+    }
+
+    // Find event
+    const event =
+      await getEventById(
+        ticket.event.toString()
+      );
+
+    if (!event) {
+      throw new AppError(
+        "Event not found",
+        404
+      );
+    }
+
+    // Get organizer ID safely
+    const eventOrganizerId =
+      (event.organizer as any)._id
+        ?.toString() ??
+      event.organizer.toString();
+
+    // Only event organizer can check in tickets
+    if (
+      eventOrganizerId !== organizerId
+    ) {
+      throw new AppError(
+        "You are not authorized to check in this ticket",
+        403
+      );
+    }
+
+    // Atomically check in ticket
+    const checkedInTicket =
+      await checkInTicket(
+        ticket._id.toString()
+      );
+
+    // Another request may have checked it in
+    if (!checkedInTicket) {
+      throw new AppError(
+        "Ticket has already been used",
+        400
+      );
+    }
+
+    return checkedInTicket;
   };

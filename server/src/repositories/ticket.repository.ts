@@ -83,3 +83,27 @@ export const updateTicketStatus = async (
     }
   );
 };
+
+// ==========================
+// Check In Ticket Atomically
+// ==========================
+export const checkInTicket = async (
+  ticketId: string
+) => {
+  return await TicketModel.findOneAndUpdate(
+    {
+      _id: ticketId,
+      status: "active",
+    },
+    {
+      $set: {
+        status: "used",
+        checkedInAt: new Date(),
+      },
+    },
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+};
