@@ -53,49 +53,176 @@ const bookingMutation = useMutation({
 
 
   const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
+  data,
+  isLoading,
+  isError,
+  refetch,
+} = useQuery({
     queryKey: ["event", id],
     queryFn: () => getEventById(id!),
     enabled: !!id,
   });
 
-  // ==========================
-  // Loading
-  // ==========================
-  if (isLoading) {
-    return (
-      <main className="min-h-screen bg-[#0B1120] px-6 py-20">
-        <div className="mx-auto max-w-7xl text-center">
-          <p className="text-lg text-slate-400">
-            Loading event...
-          </p>
-        </div>
-      </main>
-    );
-  }
+// ==========================
+// Loading Skeleton
+// ==========================
+if (isLoading) {
+  return (
+    <main className="min-h-screen bg-[#0B1120] px-6 py-10">
+      <div className="mx-auto max-w-7xl animate-pulse">
+        {/* ==========================
+            Banner Skeleton
+        ========================== */}
+        <div className="h-[420px] w-full rounded-3xl bg-slate-800" />
 
-  // ==========================
-  // Error
-  // ==========================
-  if (isError || !data?.data) {
-    return (
-      <main className="min-h-screen bg-[#0B1120] px-6 py-20">
-        <div className="mx-auto max-w-7xl text-center">
-          <h1 className="text-3xl font-bold text-white">
-            Event Not Found
-          </h1>
+        {/* ==========================
+            Main Content
+        ========================== */}
+        <div className="mt-8">
+          {/* Category */}
+          <div className="h-7 w-24 rounded-full bg-slate-800" />
 
-          <p className="mt-3 text-slate-400">
-            The event you're looking for doesn't exist
-            or could not be loaded.
-          </p>
+          {/* Title + Share */}
+          <div className="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <div className="h-12 w-3/4 rounded-lg bg-slate-800" />
+
+            <div className="h-12 w-36 rounded-xl bg-slate-800" />
+          </div>
+
+          {/* Basic Info */}
+          <div className="mt-6 space-y-4">
+            <div className="h-6 w-64 rounded-lg bg-slate-800" />
+            <div className="h-6 w-56 rounded-lg bg-slate-800" />
+            <div className="h-6 w-48 rounded-lg bg-slate-800" />
+            <div className="h-6 w-52 rounded-lg bg-slate-800" />
+          </div>
+
+          {/* Price */}
+          <div className="mt-8 h-12 w-32 rounded-lg bg-slate-800" />
+
+          {/* About */}
+          <div className="mt-10">
+            <div className="h-8 w-48 rounded-lg bg-slate-800" />
+
+            <div className="mt-4 space-y-3">
+              <div className="h-5 w-full rounded-lg bg-slate-800" />
+              <div className="h-5 w-11/12 rounded-lg bg-slate-800" />
+              <div className="h-5 w-4/5 rounded-lg bg-slate-800" />
+            </div>
+          </div>
+
+          {/* Organizer */}
+          <div className="mt-10">
+            <div className="h-8 w-32 rounded-lg bg-slate-800" />
+
+            <div className="mt-5 flex items-center gap-4 rounded-2xl bg-[#162032] p-5">
+              <div className="h-16 w-16 rounded-full bg-slate-800" />
+
+              <div className="space-y-3">
+                <div className="h-5 w-40 rounded-lg bg-slate-800" />
+                <div className="h-4 w-52 rounded-lg bg-slate-800" />
+              </div>
+            </div>
+          </div>
+
+          {/* Schedule */}
+          <div className="mt-10">
+            <div className="h-8 w-48 rounded-lg bg-slate-800" />
+
+            <div className="mt-5 space-y-4 rounded-2xl bg-[#162032] p-6">
+              <div className="h-5 w-56 rounded-lg bg-slate-800" />
+              <div className="h-5 w-48 rounded-lg bg-slate-800" />
+              <div className="h-5 w-52 rounded-lg bg-slate-800" />
+              <div className="h-5 w-48 rounded-lg bg-slate-800" />
+            </div>
+          </div>
+
+          {/* Venue */}
+          <div className="mt-10">
+            <div className="h-8 w-24 rounded-lg bg-slate-800" />
+
+            <div className="mt-5 rounded-2xl bg-[#162032] p-6">
+              <div className="h-6 w-56 rounded-lg bg-slate-800" />
+              <div className="mt-3 h-5 w-72 rounded-lg bg-slate-800" />
+            </div>
+          </div>
+
+          {/* Event Location */}
+          <div className="mt-10">
+            <div className="h-8 w-48 rounded-lg bg-slate-800" />
+
+            <div className="mt-5 h-80 rounded-2xl bg-slate-800" />
+          </div>
+
+          {/* Booking Section */}
+          <div className="mt-10 rounded-2xl bg-[#162032] p-6">
+            <div className="space-y-5">
+              <div className="flex justify-between">
+                <div className="h-5 w-28 rounded-lg bg-slate-800" />
+                <div className="h-6 w-20 rounded-lg bg-slate-800" />
+              </div>
+
+              <div className="flex justify-between">
+                <div className="h-5 w-32 rounded-lg bg-slate-800" />
+                <div className="h-5 w-12 rounded-lg bg-slate-800" />
+              </div>
+
+              <div className="h-5 w-36 rounded-lg bg-slate-800" />
+
+              <div className="flex items-center gap-4">
+                <div className="h-10 w-10 rounded-lg bg-slate-800" />
+                <div className="h-6 w-8 rounded-lg bg-slate-800" />
+                <div className="h-10 w-10 rounded-lg bg-slate-800" />
+              </div>
+
+              <div className="flex justify-between border-t border-slate-700 pt-5">
+                <div className="h-6 w-16 rounded-lg bg-slate-800" />
+                <div className="h-8 w-24 rounded-lg bg-slate-800" />
+              </div>
+
+              <div className="h-12 w-full rounded-xl bg-slate-800" />
+            </div>
+          </div>
         </div>
-      </main>
-    );
-  }
+      </div>
+    </main>
+  );
+}
+
+// ==========================
+// Error
+// ==========================
+if (isError || !data?.data) {
+  return (
+    <main className="min-h-screen bg-[#0B1120] px-6 py-20">
+      <div className="mx-auto flex max-w-7xl flex-col items-center text-center">
+        {/* Icon */}
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
+          <span className="text-3xl">⚠️</span>
+        </div>
+
+        {/* Message */}
+        <h1 className="mt-6 text-3xl font-bold text-white">
+          Event Not Found
+        </h1>
+
+        <p className="mt-3 max-w-md text-slate-400">
+          The event you're looking for doesn't
+          exist or could not be loaded.
+        </p>
+
+        {/* Retry */}
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+        >
+          Try Again
+        </button>
+      </div>
+    </main>
+  );
+}
 
   const event = data.data;
 

@@ -3,46 +3,145 @@ import { useQuery } from "@tanstack/react-query";
 import { getMyTickets } from "../../../services/ticket/ticket.service";
 
 function MyTickets() {
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["my-tickets"],
-    queryFn: getMyTickets,
-  });
+const {
+  data,
+  isLoading,
+  isError,
+  refetch,
+} = useQuery({
+  queryKey: ["my-tickets"],
+  queryFn: getMyTickets,
+});
 
-  if (isLoading) {
-    return (
-      <div className="py-10 text-center text-slate-400">
-        Loading your tickets...
+// ==========================
+// Loading Skeleton
+// ==========================
+if (isLoading) {
+  return (
+    <div>
+      {/* Page Header Skeleton */}
+      <div className="mb-8 animate-pulse">
+        <div className="h-9 w-40 rounded-lg bg-slate-800" />
       </div>
-    );
-  }
 
-  if (isError) {
-    return (
-      <div className="py-10 text-center text-red-400">
-        Failed to load your tickets.
+      {/* Ticket Cards Skeleton */}
+      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map(
+          (_, index) => (
+            <div
+              key={index}
+              className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032] p-6 animate-pulse"
+            >
+              {/* Event Info */}
+              <div className="space-y-3">
+                {/* Title */}
+                <div className="h-7 w-3/4 rounded-lg bg-slate-800" />
+
+                {/* Location */}
+                <div className="h-5 w-2/3 rounded-lg bg-slate-800" />
+
+                {/* Date */}
+                <div className="h-5 w-4/5 rounded-lg bg-slate-800" />
+              </div>
+
+              {/* QR Code */}
+              <div className="mt-6 flex justify-center rounded-2xl bg-slate-800 p-4">
+                <div className="h-48 w-48 rounded-lg bg-slate-700" />
+              </div>
+
+              {/* Ticket Info */}
+              <div className="mt-6 space-y-4">
+                {/* Ticket Code */}
+                <div className="flex justify-between">
+                  <div className="h-5 w-16 rounded-lg bg-slate-800" />
+                  <div className="h-5 w-28 rounded-lg bg-slate-800" />
+                </div>
+
+                {/* Status */}
+                <div className="flex justify-between">
+                  <div className="h-5 w-16 rounded-lg bg-slate-800" />
+                  <div className="h-7 w-20 rounded-full bg-slate-800" />
+                </div>
+              </div>
+            </div>
+          )
+        )}
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+ // ==========================
+// Error
+// ==========================
+if (isError) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      {/* Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
+        <span className="text-3xl">⚠️</span>
+      </div>
+
+      {/* Message */}
+      <h2 className="mt-6 text-2xl font-bold text-white">
+        Unable to Load Tickets
+      </h2>
+
+      <p className="mt-3 max-w-md text-slate-400">
+        We couldn't load your tickets right now.
+        Please check your connection and try
+        again.
+      </p>
+
+      {/* Retry */}
+      <button
+        type="button"
+        onClick={() => refetch()}
+        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+      >
+        Try Again
+      </button>
+    </div>
+  );
+}
 
   const tickets = data?.data ?? [];
 
-  if (tickets.length === 0) {
-    return (
-      <div className="py-16 text-center">
-        <h1 className="text-3xl font-bold text-white">
-          No Tickets Found
-        </h1>
-
-        <p className="mt-3 text-slate-400">
-          Your paid event tickets will appear here.
-        </p>
+// ==========================
+// No Tickets
+// ==========================
+if (tickets.length === 0) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      {/* Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+        <span className="text-3xl">🎟️</span>
       </div>
-    );
-  }
+
+      {/* Message */}
+      <h1 className="mt-6 text-2xl font-bold text-white">
+        No Tickets Yet
+      </h1>
+
+      <p className="mt-3 max-w-md text-slate-400">
+        Your paid event tickets will appear
+        here. Explore events and book your
+        next experience.
+      </p>
+
+      {/* Action */}
+      <button
+        type="button"
+        onClick={() =>
+          window.location.href = "/events"
+        }
+        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+      >
+        Explore Events
+      </button>
+    </div>
+  );
+}
 
   return (
     <div>

@@ -59,14 +59,15 @@ function MyBookings() {
   // ==========================
   // Get My Bookings
   // ==========================
-  const {
-    data,
-    isLoading,
-    isError,
-  } = useQuery({
-    queryKey: ["my-bookings"],
-    queryFn: getMyBookings,
-  });
+const {
+  data,
+  isLoading,
+  isError,
+  refetch,
+} = useQuery({
+  queryKey: ["my-bookings"],
+  queryFn: getMyBookings,
+});
 
   // ==========================
   // Cancel Booking
@@ -209,46 +210,137 @@ function MyBookings() {
   };
 
   // ==========================
-  // Loading
-  // ==========================
-  if (isLoading) {
-    return (
-      <div className="py-10 text-center text-slate-400">
-        Loading your bookings...
-      </div>
-    );
-  }
+// Loading Skeleton
+// ==========================
+if (isLoading) {
+  return (
+    <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
+      {Array.from({ length: 6 }).map(
+        (_, index) => (
+          <div
+            key={index}
+            className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032] animate-pulse"
+          >
+            {/* Event Banner */}
+            <div className="h-52 w-full bg-slate-800" />
+
+            {/* Booking Details */}
+            <div className="space-y-4 p-6">
+              {/* Title */}
+              <div className="h-7 w-3/4 rounded-lg bg-slate-800" />
+
+              {/* Location */}
+              <div className="h-5 w-2/3 rounded-lg bg-slate-800" />
+
+              {/* Date */}
+              <div className="h-5 w-4/5 rounded-lg bg-slate-800" />
+
+              {/* Tickets */}
+              <div className="flex justify-between">
+                <div className="h-5 w-20 rounded-lg bg-slate-800" />
+                <div className="h-5 w-10 rounded-lg bg-slate-800" />
+              </div>
+
+              {/* Total */}
+              <div className="flex justify-between">
+                <div className="h-5 w-16 rounded-lg bg-slate-800" />
+                <div className="h-6 w-20 rounded-lg bg-slate-800" />
+              </div>
+
+              {/* Status badges */}
+              <div className="flex gap-3 pt-2">
+                <div className="h-7 w-24 rounded-full bg-slate-800" />
+                <div className="h-7 w-28 rounded-full bg-slate-800" />
+              </div>
+
+              {/* Buttons */}
+              <div className="space-y-3 pt-2">
+                <div className="h-12 w-full rounded-xl bg-slate-800" />
+                <div className="h-12 w-full rounded-xl bg-slate-800" />
+              </div>
+            </div>
+          </div>
+        )
+      )}
+    </div>
+  );
+}
 
   // ==========================
   // Error
   // ==========================
-  if (isError) {
-    return (
-      <div className="py-10 text-center text-red-400">
-        Failed to load your bookings.
+ // ==========================
+// Error
+// ==========================
+if (isError) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      {/* Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
+        <span className="text-3xl">⚠️</span>
       </div>
-    );
-  }
+
+      {/* Message */}
+      <h2 className="mt-6 text-2xl font-bold text-white">
+        Unable to Load Bookings
+      </h2>
+
+      <p className="mt-3 max-w-md text-slate-400">
+        We couldn't load your bookings right now.
+        Please check your connection and try
+        again.
+      </p>
+
+      {/* Retry */}
+      <button
+        type="button"
+        onClick={() => refetch()}
+        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+      >
+        Try Again
+      </button>
+    </div>
+  );
+}
 
   const bookings = data?.data ?? [];
 
   // ==========================
-  // No Bookings
-  // ==========================
-  if (bookings.length === 0) {
-    return (
-      <div className="py-16 text-center">
-        <h2 className="text-2xl font-bold text-white">
-          No Bookings Found
-        </h2>
-
-        <p className="mt-3 text-slate-400">
-          Book an event to see your tickets
-          here.
-        </p>
+// No Bookings
+// ==========================
+if (bookings.length === 0) {
+  return (
+    <div className="flex flex-col items-center justify-center py-20 text-center">
+      {/* Icon */}
+      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+        <span className="text-3xl">🎟️</span>
       </div>
-    );
-  }
+
+      {/* Message */}
+      <h2 className="mt-6 text-2xl font-bold text-white">
+        No Bookings Yet
+      </h2>
+
+      <p className="mt-3 max-w-md text-slate-400">
+        You haven't booked any events yet.
+        Explore upcoming events and find
+        something you'll enjoy.
+      </p>
+
+      {/* Action */}
+      <button
+        type="button"
+        onClick={() =>
+          window.location.href = "/events"
+        }
+        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+      >
+        Explore Events
+      </button>
+    </div>
+  );
+}
+  
 
   return (
     <div>
