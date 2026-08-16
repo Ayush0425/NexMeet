@@ -4,6 +4,8 @@ import {
   useQueryClient,
 } from "@tanstack/react-query";
 
+import toast from "react-hot-toast";
+
 import {
   cancelBooking,
   getMyBookings,
@@ -59,15 +61,15 @@ function MyBookings() {
   // ==========================
   // Get My Bookings
   // ==========================
-const {
-  data,
-  isLoading,
-  isError,
-  refetch,
-} = useQuery({
-  queryKey: ["my-bookings"],
-  queryFn: getMyBookings,
-});
+  const {
+    data,
+    isLoading,
+    isError,
+    refetch,
+  } = useQuery({
+    queryKey: ["my-bookings"],
+    queryFn: getMyBookings,
+  });
 
   // ==========================
   // Cancel Booking
@@ -80,15 +82,13 @@ const {
         queryKey: ["my-bookings"],
       });
 
-      alert(
+      toast.success(
         "Booking cancelled successfully!"
       );
     },
 
     onError: (error: any) => {
-      console.error(error);
-
-      alert(
+      toast.error(
         error?.response?.data?.message ||
           "Failed to cancel booking"
       );
@@ -123,77 +123,77 @@ const {
       const key = response?.key;
 
       if (!order || !key) {
-        alert(
+        toast.error(
           "Unable to create payment order."
         );
+
         return;
       }
 
+      // ==========================
       // Open Razorpay Checkout
-      const razorpay = new window.Razorpay({
-        key,
+      // ==========================
+      const razorpay =
+        new window.Razorpay({
+          key,
 
-        amount: order.amount,
+          amount: order.amount,
 
-        currency: order.currency,
+          currency: order.currency,
 
-        name: "NexMeet",
+          name: "NexMeet",
 
-        description:
-          "Event Booking Payment",
+          description:
+            "Event Booking Payment",
 
-        order_id: order.id,
+          order_id: order.id,
 
-        handler: async (paymentResponse) => {
-          try {
-            // Verify payment on backend
-            await verifyPayment({
-              razorpay_order_id:
-                paymentResponse.razorpay_order_id,
+          handler: async (
+            paymentResponse
+          ) => {
+            try {
+              // ==========================
+              // Verify Payment On Backend
+              // ==========================
+              await verifyPayment({
+                razorpay_order_id:
+                  paymentResponse.razorpay_order_id,
 
-              razorpay_payment_id:
-                paymentResponse.razorpay_payment_id,
+                razorpay_payment_id:
+                  paymentResponse.razorpay_payment_id,
 
-              razorpay_signature:
-                paymentResponse.razorpay_signature,
-            });
+                razorpay_signature:
+                  paymentResponse.razorpay_signature,
+              });
 
-            alert(
-              "Payment successful! Your booking is confirmed."
-            );
+              toast.success(
+                "Payment successful! Your booking is confirmed."
+              );
 
-            // Refresh bookings
-            queryClient.invalidateQueries({
-              queryKey: ["my-bookings"],
-            });
-          } catch (error: any) {
-            console.error(
-              "Payment verification failed:",
-              error
-            );
+              // ==========================
+              // Refresh Bookings
+              // ==========================
+              queryClient.invalidateQueries({
+                queryKey: ["my-bookings"],
+              });
+            } catch (error: any) {
+              toast.error(
+                error?.response?.data?.message ||
+                  "Payment verification failed."
+              );
+            }
+          },
 
-            alert(
-              error?.response?.data?.message ||
-                "Payment verification failed."
-            );
-          }
-        },
-
-        theme: {
-          color: "#10b981",
-        },
-      });
+          theme: {
+            color: "#10b981",
+          },
+        });
 
       razorpay.open();
     },
 
     onError: (error: any) => {
-      console.error(
-        "Payment order creation failed:",
-        error
-      );
-
-      alert(
+      toast.error(
         error?.response?.data?.message ||
           "Unable to start payment."
       );
@@ -210,316 +210,351 @@ const {
   };
 
   // ==========================
-// Loading Skeleton
-// ==========================
-if (isLoading) {
-  return (
-    <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-      {Array.from({ length: 6 }).map(
-        (_, index) => (
-          <div
-            key={index}
-            className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032] animate-pulse"
-          >
-            {/* Event Banner */}
-            <div className="h-52 w-full bg-slate-800" />
+  // Loading Skeleton
+  // ==========================
+  if (isLoading) {
+    return (
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
+        {Array.from({ length: 6 }).map(
+          (_, index) => (
+            <div
+              key={index}
+              className="animate-pulse overflow-hidden rounded-3xl border border-slate-800 bg-[#162032]"
+            >
+              {/* Event Banner */}
+              <div className="h-44 w-full bg-slate-800 sm:h-52" />
 
-            {/* Booking Details */}
-            <div className="space-y-4 p-6">
-              {/* Title */}
-              <div className="h-7 w-3/4 rounded-lg bg-slate-800" />
+              {/* Booking Details */}
+              <div className="space-y-4 p-5 sm:p-6">
+                {/* Title */}
+                <div className="h-7 w-3/4 rounded-lg bg-slate-800" />
 
-              {/* Location */}
-              <div className="h-5 w-2/3 rounded-lg bg-slate-800" />
+                {/* Location */}
+                <div className="h-5 w-2/3 rounded-lg bg-slate-800" />
 
-              {/* Date */}
-              <div className="h-5 w-4/5 rounded-lg bg-slate-800" />
+                {/* Date */}
+                <div className="h-5 w-4/5 rounded-lg bg-slate-800" />
 
-              {/* Tickets */}
-              <div className="flex justify-between">
-                <div className="h-5 w-20 rounded-lg bg-slate-800" />
-                <div className="h-5 w-10 rounded-lg bg-slate-800" />
-              </div>
+                {/* Tickets */}
+                <div className="flex justify-between">
+                  <div className="h-5 w-20 rounded-lg bg-slate-800" />
 
-              {/* Total */}
-              <div className="flex justify-between">
-                <div className="h-5 w-16 rounded-lg bg-slate-800" />
-                <div className="h-6 w-20 rounded-lg bg-slate-800" />
-              </div>
+                  <div className="h-5 w-10 rounded-lg bg-slate-800" />
+                </div>
 
-              {/* Status badges */}
-              <div className="flex gap-3 pt-2">
-                <div className="h-7 w-24 rounded-full bg-slate-800" />
-                <div className="h-7 w-28 rounded-full bg-slate-800" />
-              </div>
+                {/* Total */}
+                <div className="flex justify-between">
+                  <div className="h-5 w-16 rounded-lg bg-slate-800" />
 
-              {/* Buttons */}
-              <div className="space-y-3 pt-2">
-                <div className="h-12 w-full rounded-xl bg-slate-800" />
-                <div className="h-12 w-full rounded-xl bg-slate-800" />
+                  <div className="h-6 w-20 rounded-lg bg-slate-800" />
+                </div>
+
+                {/* Status Badges */}
+                <div className="flex flex-wrap gap-3 pt-2">
+                  <div className="h-7 w-24 rounded-full bg-slate-800" />
+
+                  <div className="h-7 w-28 rounded-full bg-slate-800" />
+                </div>
+
+                {/* Buttons */}
+                <div className="space-y-3 pt-2">
+                  <div className="h-12 w-full rounded-xl bg-slate-800" />
+
+                  <div className="h-12 w-full rounded-xl bg-slate-800" />
+                </div>
               </div>
             </div>
-          </div>
-        )
-      )}
-    </div>
-  );
-}
+          )
+        )}
+      </div>
+    );
+  }
 
   // ==========================
   // Error
   // ==========================
- // ==========================
-// Error
-// ==========================
-if (isError) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      {/* Icon */}
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
-        <span className="text-3xl">⚠️</span>
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+        {/* Icon */}
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-red-500/10">
+          <span className="text-3xl">
+            ⚠️
+          </span>
+        </div>
+
+        {/* Message */}
+        <h2 className="mt-6 text-2xl font-bold text-white">
+          Unable to Load Bookings
+        </h2>
+
+        <p className="mt-3 max-w-md text-sm leading-6 text-slate-400 sm:text-base">
+          We couldn't load your bookings
+          right now. Please check your
+          connection and try again.
+        </p>
+
+        {/* Retry */}
+        <button
+          type="button"
+          onClick={() => refetch()}
+          className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+        >
+          Try Again
+        </button>
       </div>
-
-      {/* Message */}
-      <h2 className="mt-6 text-2xl font-bold text-white">
-        Unable to Load Bookings
-      </h2>
-
-      <p className="mt-3 max-w-md text-slate-400">
-        We couldn't load your bookings right now.
-        Please check your connection and try
-        again.
-      </p>
-
-      {/* Retry */}
-      <button
-        type="button"
-        onClick={() => refetch()}
-        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
-      >
-        Try Again
-      </button>
-    </div>
-  );
-}
+    );
+  }
 
   const bookings = data?.data ?? [];
 
   // ==========================
-// No Bookings
-// ==========================
-if (bookings.length === 0) {
-  return (
-    <div className="flex flex-col items-center justify-center py-20 text-center">
-      {/* Icon */}
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
-        <span className="text-3xl">🎟️</span>
+  // No Bookings
+  // ==========================
+  if (bookings.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center px-4 py-20 text-center">
+        {/* Icon */}
+        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-emerald-500/10">
+          <span className="text-3xl">
+            🎟️
+          </span>
+        </div>
+
+        {/* Message */}
+        <h2 className="mt-6 text-2xl font-bold text-white">
+          No Bookings Yet
+        </h2>
+
+        <p className="mt-3 max-w-md text-sm leading-6 text-slate-400 sm:text-base">
+          You haven't booked any events yet.
+          Explore upcoming events and find
+          something you'll enjoy.
+        </p>
+
+        {/* Action */}
+        <button
+          type="button"
+          onClick={() =>
+            (window.location.href =
+              "/events")
+          }
+          className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
+        >
+          Explore Events
+        </button>
       </div>
-
-      {/* Message */}
-      <h2 className="mt-6 text-2xl font-bold text-white">
-        No Bookings Yet
-      </h2>
-
-      <p className="mt-3 max-w-md text-slate-400">
-        You haven't booked any events yet.
-        Explore upcoming events and find
-        something you'll enjoy.
-      </p>
-
-      {/* Action */}
-      <button
-        type="button"
-        onClick={() =>
-          window.location.href = "/events"
-        }
-        className="mt-6 rounded-xl bg-emerald-600 px-6 py-3 font-semibold text-white transition hover:bg-emerald-700"
-      >
-        Explore Events
-      </button>
-    </div>
-  );
-}
-  
+    );
+  }
 
   return (
     <div>
-      <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
-        {bookings.map((booking: any) => (
-          <div
-            key={booking._id}
-            className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032]"
-          >
-            {/* ==========================
-                Event Banner
-            ========================== */}
-            {booking.event?.banner ? (
-              <img
-                src={booking.event.banner}
-                alt={booking.event.title}
-                className="h-52 w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-52 items-center justify-center bg-[#0B1120]">
-                <span className="text-slate-500">
-                  No banner available
-                </span>
-              </div>
-            )}
+      {/* ==========================
+          Page Header
+      ========================== */}
+      <div className="mb-6 sm:mb-8">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">
+          My Bookings
+        </h1>
 
-            {/* ==========================
-                Booking Details
-            ========================== */}
-            <div className="space-y-4 p-6">
-              <h2 className="text-2xl font-bold text-white">
-                {booking.event?.title}
-              </h2>
+        <p className="mt-2 text-sm text-slate-400 sm:text-base">
+          Manage your event bookings and
+          payments.
+        </p>
+      </div>
 
-              <p className="text-slate-400">
-                📍 {booking.event?.location}
-              </p>
-
-              <p className="text-slate-400">
-                📅{" "}
-                {booking.event?.startDateTime
-                  ? new Date(
-                      booking.event.startDateTime
-                    ).toLocaleString()
-                  : "Date unavailable"}
-              </p>
-
-              {/* Tickets */}
-              <div className="flex justify-between text-slate-400">
-                <span>🎟️ Tickets</span>
-
-                <span className="font-semibold text-white">
-                  {booking.quantity}
-                </span>
-              </div>
-
-              {/* Total */}
-              <div className="flex justify-between">
-                <span className="text-slate-400">
-                  💰 Total
-                </span>
-
-                <span className="font-bold text-emerald-400">
-                  ₹{booking.totalPrice}
-                </span>
-              </div>
-
+      {/* ==========================
+          Bookings Grid
+      ========================== */}
+      <div className="grid gap-6 sm:gap-8 md:grid-cols-2 xl:grid-cols-3">
+        {bookings.map(
+          (booking: any) => (
+            <div
+              key={booking._id}
+              className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032]"
+            >
               {/* ==========================
-                  Status
+                  Event Banner
               ========================== */}
-              <div className="flex flex-wrap gap-3 pt-2">
-                {/* Booking Status */}
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${
-                    booking.bookingStatus ===
-                    "confirmed"
-                      ? "bg-emerald-500/20 text-emerald-400"
-                      : booking.bookingStatus ===
-                        "cancelled"
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-yellow-500/20 text-yellow-400"
-                  }`}
-                >
-                  {booking.bookingStatus}
-                </span>
-
-                {/* Payment Status */}
-                <span
-                  className={`rounded-full px-3 py-1 text-sm font-medium ${
-                    booking.paymentStatus ===
-                    "paid"
-                      ? "bg-emerald-500/20 text-emerald-400"
-                      : booking.paymentStatus ===
-                        "failed"
-                      ? "bg-red-500/20 text-red-400"
-                      : "bg-yellow-500/20 text-yellow-400"
-                  }`}
-                >
-                  Payment:{" "}
-                  {booking.paymentStatus}
-                </span>
-              </div>
-
-              {/* ==========================
-                  Pay Now
-              ========================== */}
-              {booking.bookingStatus !==
-                "cancelled" &&
-                booking.paymentStatus !==
-                  "paid" && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handlePayment(
-                        booking._id
-                      )
-                    }
-                    disabled={
-                      paymentMutation.isPending
-                    }
-                    className="w-full rounded-xl bg-emerald-600 py-3 font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {paymentMutation.isPending
-                      ? "Opening Payment..."
-                      : "Pay Now"}
-                  </button>
-                )}
-
-              {/* ==========================
-                  Cancel Booking
-              ========================== */}
-              {booking.bookingStatus !==
-                "cancelled" &&
-                booking.paymentStatus !==
-                  "paid" && (
-                  <button
-                    type="button"
-                    onClick={() =>
-                      handleCancelBooking(
-                        booking._id
-                      )
-                    }
-                    disabled={
-                      cancelMutation.isPending
-                    }
-                    className="w-full rounded-xl bg-red-600 py-3 font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
-                  >
-                    {cancelMutation.isPending
-                      ? "Cancelling..."
-                      : "Cancel Booking"}
-                  </button>
-                )}
-
-              {/* ==========================
-                  Paid Message
-              ========================== */}
-              {booking.paymentStatus ===
-                "paid" &&
-                booking.bookingStatus ===
-                  "confirmed" && (
-                  <div className="rounded-xl bg-emerald-500/10 px-4 py-3 text-center text-sm text-emerald-400">
-                    ✓ Payment completed
-                    successfully
-                  </div>
-                )}
-
-              {/* ==========================
-                  Cancelled Message
-              ========================== */}
-              {booking.bookingStatus ===
-                "cancelled" && (
-                <div className="rounded-xl bg-red-500/10 px-4 py-3 text-center text-sm text-red-400">
-                  This booking has been
-                  cancelled.
+              {booking.event?.banner ? (
+                <img
+                  src={booking.event.banner}
+                  alt={
+                    booking.event.title
+                  }
+                  className="h-44 w-full object-cover sm:h-52"
+                />
+              ) : (
+                <div className="flex h-44 items-center justify-center bg-[#0B1120] sm:h-52">
+                  <span className="text-sm text-slate-500">
+                    No banner available
+                  </span>
                 </div>
               )}
+
+              {/* ==========================
+                  Booking Details
+              ========================== */}
+              <div className="space-y-4 p-5 sm:p-6">
+                {/* Event Title */}
+                <h2 className="line-clamp-2 break-words text-xl font-bold text-white sm:text-2xl">
+                  {booking.event?.title ||
+                    "Event"}
+                </h2>
+
+                {/* Location */}
+                <p className="break-words text-sm leading-6 text-slate-400 sm:text-base">
+                  📍{" "}
+                  {booking.event?.location ||
+                    "Location unavailable"}
+                </p>
+
+                {/* Date */}
+                <p className="break-words text-sm leading-6 text-slate-400 sm:text-base">
+                  📅{" "}
+                  {booking.event
+                    ?.startDateTime
+                    ? new Date(
+                        booking.event.startDateTime
+                      ).toLocaleString()
+                    : "Date unavailable"}
+                </p>
+
+                {/* Tickets */}
+                <div className="flex items-center justify-between gap-4 text-sm sm:text-base">
+                  <span className="text-slate-400">
+                    🎟️ Tickets
+                  </span>
+
+                  <span className="shrink-0 font-semibold text-white">
+                    {booking.quantity}
+                  </span>
+                </div>
+
+                {/* Total */}
+                <div className="flex items-center justify-between gap-4">
+                  <span className="text-sm text-slate-400 sm:text-base">
+                    💰 Total
+                  </span>
+
+                  <span className="shrink-0 text-lg font-bold text-emerald-400">
+                    ₹{booking.totalPrice}
+                  </span>
+                </div>
+
+                {/* ==========================
+                    Status
+                ========================== */}
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {/* Booking Status */}
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium sm:text-sm ${
+                      booking.bookingStatus ===
+                      "confirmed"
+                        ? "bg-emerald-500/20 text-emerald-400"
+                        : booking.bookingStatus ===
+                          "cancelled"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    {booking.bookingStatus}
+                  </span>
+
+                  {/* Payment Status */}
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-medium sm:text-sm ${
+                      booking.paymentStatus ===
+                      "paid"
+                        ? "bg-emerald-500/20 text-emerald-400"
+                        : booking.paymentStatus ===
+                          "failed"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    Payment:{" "}
+                    {booking.paymentStatus}
+                  </span>
+                </div>
+
+                {/* ==========================
+                    Pay Now
+                ========================== */}
+                {booking.bookingStatus !==
+                  "cancelled" &&
+                  booking.paymentStatus !==
+                    "paid" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handlePayment(
+                          booking._id
+                        )
+                      }
+                      disabled={
+                        paymentMutation.isPending
+                      }
+                      className="w-full rounded-xl bg-emerald-600 py-3 text-sm font-semibold text-white transition hover:bg-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+                    >
+                      {paymentMutation.isPending
+                        ? "Opening Payment..."
+                        : "Pay Now"}
+                    </button>
+                  )}
+
+                {/* ==========================
+                    Cancel Booking
+                ========================== */}
+                {booking.bookingStatus !==
+                  "cancelled" &&
+                  booking.paymentStatus !==
+                    "paid" && (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        handleCancelBooking(
+                          booking._id
+                        )
+                      }
+                      disabled={
+                        cancelMutation.isPending
+                      }
+                      className="w-full rounded-xl bg-red-600 py-3 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 sm:text-base"
+                    >
+                      {cancelMutation.isPending
+                        ? "Cancelling..."
+                        : "Cancel Booking"}
+                    </button>
+                  )}
+
+                {/* ==========================
+                    Paid Message
+                ========================== */}
+                {booking.paymentStatus ===
+                  "paid" &&
+                  booking.bookingStatus ===
+                    "confirmed" && (
+                    <div className="rounded-xl bg-emerald-500/10 px-4 py-3 text-center text-sm leading-5 text-emerald-400">
+                      ✓ Payment completed
+                      successfully
+                    </div>
+                  )}
+
+                {/* ==========================
+                    Cancelled Message
+                ========================== */}
+                {booking.bookingStatus ===
+                  "cancelled" && (
+                  <div className="rounded-xl bg-red-500/10 px-4 py-3 text-center text-sm leading-5 text-red-400">
+                    This booking has been
+                    cancelled.
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        )}
       </div>
     </div>
   );

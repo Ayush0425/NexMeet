@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
+
 import EventModel from "../models/event.model";
+
 import { CreateEventInput } from "../validators/event.validator";
 
 // ==========================
@@ -10,7 +12,6 @@ export const createEvent = async (
     organizer: string;
     availableSeats: number;
   }
-  
 ) => {
   return await EventModel.create(eventData);
 };
@@ -56,36 +57,45 @@ export const getAllEvents = async (
 
   // Pagination
   const skip = (page - 1) * limit;
-  let sortQuery: any = { startDateTime: 1 };
 
-switch (sort) {
-  case "newest":
-    sortQuery = { createdAt: -1 };
-    break;
+  let sortQuery: Record<string, 1 | -1> = {
+    startDateTime: 1,
+  };
 
-  case "oldest":
-    sortQuery = { createdAt: 1 };
-    break;
+  switch (sort) {
+    case "newest":
+      sortQuery = { createdAt: -1 };
+      break;
 
-  case "priceAsc":
-    sortQuery = { price: 1 };
-    break;
+    case "oldest":
+      sortQuery = { createdAt: 1 };
+      break;
 
-  case "priceDesc":
-    sortQuery = { price: -1 };
-    break;
+    case "priceAsc":
+      sortQuery = { price: 1 };
+      break;
 
-  default:
-    sortQuery = { startDateTime: 1 };
-}
+    case "priceDesc":
+      sortQuery = { price: -1 };
+      break;
+
+    default:
+      sortQuery = {
+        startDateTime: 1,
+      };
+  }
 
   const events = await EventModel.find(query)
-    .populate("organizer", "fullName email")
-    .sort({ startDateTime: 1 })
+    .populate(
+      "organizer",
+      "fullName email"
+    )
+    .sort(sortQuery)
     .skip(skip)
     .limit(limit);
 
-  const totalEvents = await EventModel.countDocuments(query);
+  const totalEvents =
+    await EventModel.countDocuments(query);
 
   return {
     events,
@@ -96,8 +106,12 @@ switch (sort) {
 // ==========================
 // Get Event By ID
 // ==========================
-export const getEventById = async (eventId: string) => {
-  return await EventModel.findById(eventId).populate(
+export const getEventById = async (
+  eventId: string
+) => {
+  return await EventModel.findById(
+    eventId
+  ).populate(
     "organizer",
     "fullName email"
   );
@@ -108,25 +122,41 @@ export const getEventById = async (eventId: string) => {
 // ==========================
 export const updateEvent = async (
   eventId: string,
+  organizerId: string,
   updateData: Partial<CreateEventInput>
 ) => {
-  return await EventModel.findByIdAndUpdate(
-    eventId,
+  return await EventModel.findOneAndUpdate(
+    {
+      _id: eventId,
+      organizer: organizerId,
+    },
     updateData,
     {
       new: true,
       runValidators: true,
     }
-  ).populate("organizer", "fullName email");
+  ).populate(
+    "organizer",
+    "fullName email"
+  );
 };
 
 // ==========================
 // Delete Event
 // ==========================
-export const deleteEvent = async (eventId: string) => {
-  return await EventModel.findByIdAndDelete(eventId);
+export const deleteEvent = async (
+  eventId: string,
+  organizerId: string
+) => {
+  return await EventModel.findOneAndDelete({
+    _id: eventId,
+    organizer: organizerId,
+  });
 };
 
+// ==========================
+// Update Available Seats
+// ==========================
 export const updateAvailableSeats = async (
   eventId: string,
   availableSeats: number
@@ -137,12 +167,14 @@ export const updateAvailableSeats = async (
     { new: true }
   );
 };
+
 // ==========================
 // Increase Available Seats
 // ==========================
 export const increaseAvailableSeats = async (
   eventId: string,
-  seats: number
+  seats: number,
+  session?: mongoose.ClientSession
 ) => {
   return await EventModel.findByIdAndUpdate(
     eventId,
@@ -153,9 +185,11 @@ export const increaseAvailableSeats = async (
     },
     {
       new: true,
+      session,
     }
   );
 };
+
 // ==========================
 // Get Organizer Events
 // ==========================
@@ -180,7 +214,9 @@ export const decreaseAvailableSeats = async (
   return await EventModel.findOneAndUpdate(
     {
       _id: eventId,
-      availableSeats: { $gte: quantity },
+      availableSeats: {
+        $gte: quantity,
+      },
     },
     {
       $inc: {
@@ -193,4 +229,3 @@ export const decreaseAvailableSeats = async (
     }
   );
 };
-

@@ -18,7 +18,7 @@ export const protect = async (
       });
     }
 
-    const token = authHeader.split(" ")[1];
+    const token = authHeader.slice(7);
 
     const decoded = verifyToken(token);
 

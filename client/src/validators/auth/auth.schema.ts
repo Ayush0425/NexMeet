@@ -6,15 +6,28 @@ import { z } from "zod";
 export const loginSchema = z.object({
   email: z
     .string()
+    .trim()
     .min(1, "Email is required")
-    .email("Invalid email address"),
+    .email("Invalid email address")
+    .max(
+      254,
+      "Email address is too long"
+    ),
 
   password: z
     .string()
-    .min(6, "Password must be at least 6 characters"),
+    .min(
+      8,
+      "Password must be at least 8 characters"
+    )
+    .max(
+      128,
+      "Password cannot exceed 128 characters"
+    ),
 });
 
-export type LoginFormData = z.infer<typeof loginSchema>;
+export type LoginFormData =
+  z.infer<typeof loginSchema>;
 
 // ======================
 // Register Schema
@@ -23,12 +36,27 @@ export const registerSchema = z
   .object({
     fullName: z
       .string()
-      .min(3, "Full name must be at least 3 characters"),
+      .trim()
+      .min(
+        3,
+        "Full name must be at least 3 characters"
+      )
+      .max(
+        100,
+        "Full name cannot exceed 100 characters"
+      ),
 
     username: z
       .string()
-      .min(3, "Username must be at least 3 characters")
-      .max(20, "Username cannot exceed 20 characters")
+      .trim()
+      .min(
+        3,
+        "Username must be at least 3 characters"
+      )
+      .max(
+        20,
+        "Username cannot exceed 20 characters"
+      )
       .regex(
         /^[a-zA-Z0-9_]+$/,
         "Username can only contain letters, numbers and underscores"
@@ -36,33 +64,63 @@ export const registerSchema = z
 
     email: z
       .string()
+      .trim()
       .min(1, "Email is required")
-      .email("Invalid email"),
+      .email("Invalid email")
+      .max(
+        254,
+        "Email address is too long"
+      ),
 
     password: z
       .string()
-      .min(6, "Password must be at least 6 characters"),
+      .min(
+        8,
+        "Password must be at least 8 characters"
+      )
+      .max(
+        128,
+        "Password cannot exceed 128 characters"
+      ),
 
     confirmPassword: z
       .string()
-      .min(6, "Confirm your password"),
+      .min(
+        8,
+        "Confirm your password"
+      )
+      .max(
+        128,
+        "Password cannot exceed 128 characters"
+      ),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    (data) =>
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    }
+  );
 
-export type RegisterFormData = z.infer<typeof registerSchema>;
+export type RegisterFormData =
+  z.infer<typeof registerSchema>;
 
 // ======================
 // Forgot Password Schema
 // ======================
-export const forgotPasswordSchema = z.object({
-  email: z
-    .string()
-    .min(1, "Email is required")
-    .email("Invalid email address"),
-});
+export const forgotPasswordSchema =
+  z.object({
+    email: z
+      .string()
+      .trim()
+      .min(1, "Email is required")
+      .email("Invalid email address")
+      .max(
+        254,
+        "Email address is too long"
+      ),
+  });
 
 export type ForgotPasswordFormData =
   z.infer<typeof forgotPasswordSchema>;
@@ -74,16 +132,34 @@ export const resetPasswordSchema = z
   .object({
     password: z
       .string()
-      .min(6, "Password must be at least 6 characters"),
+      .min(
+        8,
+        "Password must be at least 8 characters"
+      )
+      .max(
+        128,
+        "Password cannot exceed 128 characters"
+      ),
 
     confirmPassword: z
       .string()
-      .min(6, "Confirm your password"),
+      .min(
+        8,
+        "Confirm your password"
+      )
+      .max(
+        128,
+        "Password cannot exceed 128 characters"
+      ),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    message: "Passwords do not match",
-    path: ["confirmPassword"],
-  });
+  .refine(
+    (data) =>
+      data.password === data.confirmPassword,
+    {
+      message: "Passwords do not match",
+      path: ["confirmPassword"],
+    }
+  );
 
 export type ResetPasswordFormData =
   z.infer<typeof resetPasswordSchema>;

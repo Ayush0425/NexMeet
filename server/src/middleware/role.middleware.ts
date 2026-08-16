@@ -1,4 +1,5 @@
 import { Response, NextFunction } from "express";
+
 import { AuthRequest } from "../types/request.types";
 
 export const authorize = (...roles: string[]) => {
@@ -14,10 +15,19 @@ export const authorize = (...roles: string[]) => {
       });
     }
 
-    if (!roles.includes(req.user.role)) {
+    const userRole =
+      req.user.role?.toLowerCase();
+
+    const hasPermission = roles.some(
+      (role) =>
+        role.toLowerCase() === userRole
+    );
+
+    if (!hasPermission) {
       return res.status(403).json({
         success: false,
-        message: "Forbidden: You don't have permission.",
+        message:
+          "Forbidden: You don't have permission.",
       });
     }
 

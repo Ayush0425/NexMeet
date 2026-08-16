@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+
 import { generateToken } from "../utils/jwt";
 import { generateResetToken } from "../utils/resetToken";
 
@@ -36,21 +37,26 @@ export const registerUserService = async (
   } = userData;
 
   // Check Email
-  const existingEmail = await findUserByEmail(email);
+  const existingEmail =
+    await findUserByEmail(email);
 
   if (existingEmail) {
     throw new Error("Email already exists");
   }
 
   // Check Username
-  const existingUsername = await findUserByUsername(username);
+  const existingUsername =
+    await findUserByUsername(username);
 
   if (existingUsername) {
-    throw new Error("Username already exists");
+    throw new Error(
+      "Username already exists"
+    );
   }
 
   // Hash Password
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword =
+    await bcrypt.hash(password, 10);
 
   const user = await createUser({
     fullName,
@@ -86,22 +92,30 @@ export const loginUserService = async (
 ) => {
   const { email, password } = userData;
 
-  const user = await findUserByEmailWithPassword(email);
+  const user =
+    await findUserByEmailWithPassword(email);
 
   if (!user) {
-    throw new Error("Invalid email or password");
+    throw new Error(
+      "Invalid email or password"
+    );
   }
 
-  const isPasswordMatched = await bcrypt.compare(
-    password,
-    user.password
-  );
+  const isPasswordMatched =
+    await bcrypt.compare(
+      password,
+      user.password
+    );
 
   if (!isPasswordMatched) {
-    throw new Error("Invalid email or password");
+    throw new Error(
+      "Invalid email or password"
+    );
   }
 
-  const token = generateToken(user._id.toString());
+  const token = generateToken(
+    user._id.toString()
+  );
 
   return {
     id: user._id,
@@ -124,13 +138,20 @@ export const loginUserService = async (
 export const forgotPasswordService = async (
   data: ForgotPasswordInput
 ) => {
-  const user = await findUserByEmail(data.email);
+  const user =
+    await findUserByEmail(data.email);
 
+  // Don't reveal whether the email exists.
   if (!user) {
-    throw new Error("User not found");
+    return {
+      success: true,
+      message:
+        "If an account exists with this email, a password reset link will be sent.",
+    };
   }
 
-  const resetToken = generateResetToken();
+  const resetToken =
+    generateResetToken();
 
   const expire = new Date(
     Date.now() + 15 * 60 * 1000
@@ -142,10 +163,12 @@ export const forgotPasswordService = async (
     expire
   );
 
+  // Reset token should be sent through email.
+  // Do NOT return it in the API response.
   return {
     success: true,
-    message: "Reset link generated successfully",
-    resetLink: `http://localhost:5173/reset-password/${resetToken}`,
+    message:
+      "If an account exists with this email, a password reset link will be sent.",
   };
 };
 
@@ -155,9 +178,10 @@ export const forgotPasswordService = async (
 export const resetPasswordService = async (
   data: ResetPasswordInput
 ) => {
-  const user = await findUserByResetToken(
-    data.token
-  );
+  const user =
+    await findUserByResetToken(
+      data.token
+    );
 
   if (!user) {
     throw new Error(
@@ -165,10 +189,11 @@ export const resetPasswordService = async (
     );
   }
 
-  const hashedPassword = await bcrypt.hash(
-    data.password,
-    10
-  );
+  const hashedPassword =
+    await bcrypt.hash(
+      data.password,
+      10
+    );
 
   await updateUserPassword(
     user._id.toString(),
@@ -177,6 +202,7 @@ export const resetPasswordService = async (
 
   return {
     success: true,
-    message: "Password reset successful",
+    message:
+      "Password reset successful",
   };
 };

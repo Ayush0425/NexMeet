@@ -1,10 +1,10 @@
 import mongoose from "mongoose";
+
 import BookingModel from "../models/booking.model";
 
 // ==========================
 // Create Booking
 // ==========================
-
 export const createBooking = async (
   bookingData: {
     user: string;
@@ -51,36 +51,49 @@ export const getBookingById = async (
 // ==========================
 // Update Booking Payment Status
 // ==========================
-export const updateBookingPaymentStatus = async (
-  bookingId: string,
-  paymentStatus: "pending" | "paid" | "failed"
-) => {
-  const updateData: {
-    paymentStatus: "pending" | "paid" | "failed";
-    bookingStatus?: "pending" | "confirmed" | "cancelled";
-  } = {
-    paymentStatus,
-  };
+export const updateBookingPaymentStatus =
+  async (
+    bookingId: string,
+    paymentStatus:
+      | "pending"
+      | "paid"
+      | "failed"
+  ) => {
+    const updateData: {
+      paymentStatus:
+        | "pending"
+        | "paid"
+        | "failed";
 
-  if (paymentStatus === "paid") {
-    updateData.bookingStatus = "confirmed";
-  }
+      bookingStatus?:
+        | "pending"
+        | "confirmed"
+        | "cancelled";
+    } = {
+      paymentStatus,
+    };
 
-  return await BookingModel.findByIdAndUpdate(
-    bookingId,
-    updateData,
-    {
-      new: true,
-      runValidators: true,
+    if (paymentStatus === "paid") {
+      updateData.bookingStatus =
+        "confirmed";
     }
-  );
-};
+
+    return await BookingModel.findByIdAndUpdate(
+      bookingId,
+      updateData,
+      {
+        new: true,
+        runValidators: true,
+      }
+    );
+  };
 
 // ==========================
 // Cancel Booking
 // ==========================
 export const cancelBooking = async (
-  bookingId: string
+  bookingId: string,
+  session?: mongoose.ClientSession
 ) => {
   return await BookingModel.findByIdAndUpdate(
     bookingId,
@@ -89,6 +102,8 @@ export const cancelBooking = async (
     },
     {
       new: true,
+      runValidators: true,
+      session,
     }
   );
 };
@@ -116,6 +131,9 @@ export const getBookingsByEvent = async (
   return await BookingModel.find({
     event: eventId,
   })
-    .populate("user", "fullName email")
+    .populate(
+      "user",
+      "fullName email"
+    )
     .sort({ createdAt: -1 });
 };

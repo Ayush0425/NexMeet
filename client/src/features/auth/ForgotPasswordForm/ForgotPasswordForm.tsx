@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import toast from "react-hot-toast";
+
 import {
   forgotPasswordSchema,
   type ForgotPasswordFormData,
@@ -14,22 +16,24 @@ function ForgotPasswordForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ForgotPasswordFormData>({
-    resolver: zodResolver(forgotPasswordSchema),
+    resolver: zodResolver(
+      forgotPasswordSchema
+    ),
   });
 
   const onSubmit = async (
     data: ForgotPasswordFormData
   ) => {
     try {
-      const response = await forgotPassword(data);
+      const response =
+        await forgotPassword(data);
 
-      console.log(response);
-
-      alert(response.message);
+      toast.success(
+        response.message ||
+          "Reset link sent successfully!"
+      );
     } catch (error: any) {
-      console.error(error);
-
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "Something went wrong"
       );
@@ -63,7 +67,7 @@ function ForgotPasswordForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting
           ? "Sending..."

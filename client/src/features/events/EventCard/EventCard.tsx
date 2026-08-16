@@ -37,8 +37,10 @@ function EventCard({
 
   return (
     <div className="overflow-hidden rounded-3xl border border-slate-800 bg-[#162032]">
-      {/* Banner */}
-      <div className="relative h-56 overflow-hidden">
+      {/* ==========================
+          Banner
+      ========================== */}
+      <div className="relative h-52 overflow-hidden sm:h-56">
         <img
           src={eventImage}
           alt={title}
@@ -46,7 +48,7 @@ function EventCard({
         />
 
         {/* Category */}
-        <span className="absolute left-4 top-4 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white">
+        <span className="absolute left-3 top-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-semibold text-white sm:left-4 sm:top-4">
           {category}
         </span>
 
@@ -54,7 +56,12 @@ function EventCard({
         <button
           type="button"
           onClick={() => setLiked(!liked)}
-          className="absolute right-4 top-4 rounded-full bg-black/50 p-2 transition duration-300 hover:scale-110"
+          className="absolute right-3 top-3 rounded-full bg-black/50 p-2 transition duration-300 hover:scale-110 sm:right-4 sm:top-4"
+          aria-label={
+            liked
+              ? "Remove from favorites"
+              : "Add to favorites"
+          }
         >
           <Heart
             size={18}
@@ -67,34 +74,59 @@ function EventCard({
         </button>
       </div>
 
-      {/* Content */}
-      <div className="p-6">
-        <h3 className="text-xl font-semibold text-white">
+      {/* ==========================
+          Content
+      ========================== */}
+      <div className="p-5 sm:p-6">
+        {/* Title */}
+        <h3 className="line-clamp-2 text-xl font-semibold text-white">
           {title}
         </h3>
 
+        {/* Event Information */}
         <div className="mt-4 space-y-3 text-slate-400">
           {/* Date */}
-          <div className="flex items-center gap-2">
-            <CalendarDays size={18} />
-            <span>{date}</span>
+          <div className="flex items-start gap-2">
+            <CalendarDays
+              size={18}
+              className="mt-0.5 shrink-0"
+            />
+
+            <span className="min-w-0 break-words">
+              {date}
+            </span>
           </div>
 
           {/* Location */}
-          <div className="flex items-center gap-2">
-            <MapPin size={18} />
-            <span>{location}</span>
+          <div className="flex items-start gap-2">
+            <MapPin
+              size={18}
+              className="mt-0.5 shrink-0"
+            />
+
+            <span className="min-w-0 break-words">
+              {location}
+            </span>
           </div>
 
           {/* Attendees */}
           <div className="flex items-center gap-2">
-            <Users size={18} />
-            <span>{attendees} Attendees</span>
+            <Users
+              size={18}
+              className="shrink-0"
+            />
+
+            <span>
+              {attendees} Attendees
+            </span>
           </div>
         </div>
 
-        {/* Price + Rating */}
-        <div className="mt-6 flex items-center justify-between">
+        {/* ==========================
+            Price + Rating + Button
+        ========================== */}
+        <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {/* Price + Rating */}
           <div>
             <p className="text-2xl font-bold text-emerald-400">
               ₹{price}
@@ -115,7 +147,7 @@ function EventCard({
           {/* View Details */}
           <Link
             to={`/events/${eventId}`}
-            className="rounded-xl bg-emerald-500 px-5 py-2 font-medium text-white transition hover:bg-emerald-600"
+            className="w-full rounded-xl bg-emerald-500 px-5 py-2.5 text-center font-medium text-white transition hover:bg-emerald-600 sm:w-auto"
           >
             View Details
           </Link>

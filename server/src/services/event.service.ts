@@ -36,7 +36,10 @@ export const getEventByIdService = async (
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new AppError("Event not found", 404);
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   return event;
@@ -48,7 +51,9 @@ export const getEventByIdService = async (
 export const getMyEventsService = async (
   organizerId: string
 ) => {
-  return await getEventsByOrganizer(organizerId);
+  return await getEventsByOrganizer(
+    organizerId
+  );
 };
 
 // ==========================
@@ -64,7 +69,10 @@ export const updateEventService = async (
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new AppError("Event not found", 404);
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   // Check ownership
@@ -80,13 +88,22 @@ export const updateEventService = async (
   }
 
   // Update event
-  const updatedEvent = await updateEvent(
-    eventId,
-    {
-      ...updateData,
-      ...(banner && { banner }),
-    }
-  );
+  const updatedEvent =
+    await updateEvent(
+      eventId,
+      organizerId,
+      {
+        ...updateData,
+        ...(banner && { banner }),
+      }
+    );
+
+  if (!updatedEvent) {
+    throw new AppError(
+      "Unable to update event",
+      404
+    );
+  }
 
   return updatedEvent;
 };
@@ -102,7 +119,10 @@ export const deleteEventService = async (
   const event = await getEventById(eventId);
 
   if (!event) {
-    throw new AppError("Event not found", 404);
+    throw new AppError(
+      "Event not found",
+      404
+    );
   }
 
   // Check ownership
@@ -118,5 +138,16 @@ export const deleteEventService = async (
   }
 
   // Delete event
-  await deleteEvent(eventId);
+  const deletedEvent =
+    await deleteEvent(
+      eventId,
+      organizerId
+    );
+
+  if (!deletedEvent) {
+    throw new AppError(
+      "Unable to delete event",
+      404
+    );
+  }
 };

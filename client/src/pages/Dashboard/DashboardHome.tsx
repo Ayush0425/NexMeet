@@ -63,9 +63,10 @@ function DashboardHome() {
   // ==========================
   // Calculate Statistics
   // ==========================
-const allBookings = bookingQueries.flatMap(
-  (query) => (query.data as any)?.data ?? []
-);
+  const allBookings = bookingQueries.flatMap(
+    (query) =>
+      (query.data as any)?.data ?? []
+  );
 
   // Confirmed tickets only
   const ticketsSold = allBookings.reduce(
@@ -127,16 +128,16 @@ const allBookings = bookingQueries.flatMap(
     .slice(0, 5);
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-8 sm:space-y-10">
       {/* ==========================
           Header
       ========================== */}
       <div>
-        <h1 className="text-3xl font-bold text-white">
+        <h1 className="text-2xl font-bold text-white sm:text-3xl">
           Dashboard Overview
         </h1>
 
-        <p className="mt-2 text-slate-400">
+        <p className="mt-2 text-sm text-slate-400 sm:text-base">
           Here's what's happening with your
           events.
         </p>
@@ -145,9 +146,9 @@ const allBookings = bookingQueries.flatMap(
       {/* ==========================
           Statistics
       ========================== */}
-      <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-4">
+      <div className="grid gap-4 sm:gap-6 md:grid-cols-2 xl:grid-cols-4">
         {/* Total Events */}
-        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-6">
+        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-5 sm:p-6">
           <p className="text-sm text-slate-400">
             Total Events
           </p>
@@ -158,7 +159,7 @@ const allBookings = bookingQueries.flatMap(
         </div>
 
         {/* Upcoming Events */}
-        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-6">
+        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-5 sm:p-6">
           <p className="text-sm text-slate-400">
             Upcoming Events
           </p>
@@ -169,7 +170,7 @@ const allBookings = bookingQueries.flatMap(
         </div>
 
         {/* Tickets Sold */}
-        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-6">
+        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-5 sm:p-6">
           <p className="text-sm text-slate-400">
             Tickets Sold
           </p>
@@ -180,7 +181,7 @@ const allBookings = bookingQueries.flatMap(
         </div>
 
         {/* Revenue */}
-        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-6">
+        <div className="rounded-2xl border border-slate-800 bg-[#162032] p-5 sm:p-6">
           <p className="text-sm text-slate-400">
             Revenue
           </p>
@@ -194,9 +195,9 @@ const allBookings = bookingQueries.flatMap(
       {/* ==========================
           Capacity
       ========================== */}
-      <div className="rounded-2xl border border-slate-800 bg-[#162032] p-6">
-        <div className="flex items-center justify-between">
-          <div>
+      <div className="rounded-2xl border border-slate-800 bg-[#162032] p-5 sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-w-0">
             <h2 className="text-xl font-bold text-white">
               Event Capacity
             </h2>
@@ -218,11 +219,11 @@ const allBookings = bookingQueries.flatMap(
       ========================== */}
       <div>
         <div className="mb-5">
-          <h2 className="text-2xl font-bold text-white">
+          <h2 className="text-xl font-bold text-white sm:text-2xl">
             Recent Events
           </h2>
 
-          <p className="mt-1 text-slate-400">
+          <p className="mt-1 text-sm text-slate-400 sm:text-base">
             Your latest created events.
           </p>
         </div>
@@ -234,7 +235,7 @@ const allBookings = bookingQueries.flatMap(
             </p>
           </div>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
+          <div className="grid gap-5 sm:gap-6 md:grid-cols-2 xl:grid-cols-3">
             {recentEvents.map(
               (event: any) => (
                 <div
@@ -246,10 +247,10 @@ const allBookings = bookingQueries.flatMap(
                     <img
                       src={event.banner}
                       alt={event.title}
-                      className="h-44 w-full object-cover"
+                      className="h-40 w-full object-cover sm:h-44"
                     />
                   ) : (
-                    <div className="flex h-44 items-center justify-center bg-[#0B1120]">
+                    <div className="flex h-40 items-center justify-center bg-[#0B1120] sm:h-44">
                       <span className="text-slate-500">
                         No banner available
                       </span>
@@ -258,39 +259,34 @@ const allBookings = bookingQueries.flatMap(
 
                   {/* Details */}
                   <div className="space-y-3 p-5">
-                    <h3 className="text-xl font-bold text-white">
+                    <h3 className="line-clamp-2 break-words text-xl font-bold text-white">
                       {event.title}
                     </h3>
 
-                    <p className="text-sm text-slate-400">
+                    <p className="break-words text-sm text-slate-400">
                       📅{" "}
                       {new Date(
                         event.startDateTime
                       ).toLocaleString()}
                     </p>
 
-                    <div className="flex justify-between text-sm">
+                    <div className="flex items-start justify-between gap-4 text-sm">
                       <span className="text-slate-400">
                         Available Seats
                       </span>
 
-                      <span className="font-semibold text-white">
-                        {
-                          event.availableSeats
-                        }
-                        /
-                        {
-                          event.totalSeats
-                        }
+                      <span className="shrink-0 font-semibold text-white">
+                        {event.availableSeats}/
+                        {event.totalSeats}
                       </span>
                     </div>
 
-                    <div className="flex justify-between text-sm">
+                    <div className="flex items-center justify-between gap-4 text-sm">
                       <span className="text-slate-400">
                         Status
                       </span>
 
-                      <span className="font-medium text-emerald-400">
+                      <span className="shrink-0 font-medium text-emerald-400">
                         {event.status}
                       </span>
                     </div>

@@ -1,4 +1,7 @@
 import { useState } from "react";
+
+import toast from "react-hot-toast";
+
 import { createBooking } from "../../../services/booking/booking.service";
 
 type Props = {
@@ -17,16 +20,18 @@ function BookingCard({
 
   const handleBooking = async () => {
     try {
-      await createBooking({
-        eventId,
-        quantity,
-      });
+    await createBooking(
+  eventId,
+  quantity
+);
 
-      alert("Booking Successful!");
+      toast.success(
+        "Booking successful!"
+      );
     } catch (error: any) {
-      alert(
+      toast.error(
         error.response?.data?.message ??
-          "Booking Failed"
+          "Booking failed"
       );
     }
   };
@@ -44,7 +49,9 @@ function BookingCard({
           max={10}
           value={quantity}
           onChange={(e) =>
-            setQuantity(Number(e.target.value))
+            setQuantity(
+              Number(e.target.value)
+            )
           }
           className="w-full rounded-xl border border-slate-700 bg-[#0B1120] px-4 py-3 text-white"
         />
@@ -61,6 +68,7 @@ function BookingCard({
       </div>
 
       <button
+        type="button"
         onClick={handleBooking}
         className="mt-8 w-full rounded-xl bg-emerald-500 py-4 text-lg font-semibold text-white hover:bg-emerald-600"
       >

@@ -1,6 +1,9 @@
 import { Link, useNavigate } from "react-router-dom";
+
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+
+import toast from "react-hot-toast";
 
 import { useAuth } from "../../../context/auth/AuthContext";
 import { loginUser } from "../../../services/auth/auth.service";
@@ -23,27 +26,26 @@ function LoginForm() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = async (data: LoginFormData) => {
+  const onSubmit = async (
+    data: LoginFormData
+  ) => {
     try {
       const response = await loginUser(data);
 
-      console.log("Login Response:", response.data);
-
       // Extract token and user
-      const { token, ...user } = response.data;
+      const { token, ...user } =
+        response.data;
 
       // Save user & token
       login(user, token);
 
-      alert("Login Successful!");
+      toast.success(
+        "Login successful!"
+      );
 
       navigate("/");
     } catch (error: any) {
-      console.error(error);
-
-      console.log(error.response?.data);
-
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "Invalid email or password"
       );
@@ -111,7 +113,9 @@ function LoginForm() {
         disabled={isSubmitting}
         className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting ? "Signing In..." : "Sign In"}
+        {isSubmitting
+          ? "Signing In..."
+          : "Sign In"}
       </button>
 
       {/* Register */}

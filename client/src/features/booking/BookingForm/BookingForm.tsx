@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import toast from "react-hot-toast";
+
 import {
   bookingSchema,
   type BookingFormData,
@@ -35,18 +37,18 @@ function BookingForm({
     data: BookingFormData
   ) => {
     try {
-      const response =
-        await createBooking(data);
+     await createBooking(
+  data.eventId,
+  data.quantity
+);
 
-      console.log(response);
-
-      alert("Booking Successful!");
+      toast.success(
+        "Booking successful!"
+      );
     } catch (error: any) {
-      console.error(error);
-
-      alert(
+      toast.error(
         error.response?.data?.message ||
-          "Booking Failed"
+          "Booking failed"
       );
     }
   };

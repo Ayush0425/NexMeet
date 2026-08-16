@@ -1,5 +1,6 @@
-import { AppError } from "../utils/AppError";
 import mongoose from "mongoose";
+
+import { AppError } from "../utils/AppError";
 
 import {
   createBooking,
@@ -48,7 +49,7 @@ export const createBookingService = async (
     );
   }
 
-  // Prevent Duplicate Booking
+  // Prevent duplicate active booking
   const existingBooking =
     await findActiveBooking(
       userId,
@@ -62,7 +63,7 @@ export const createBookingService = async (
     );
   }
 
-  // Calculate Total Price
+  // Calculate total from server-side event price
   const totalPrice =
     event.price * bookingData.quantity;
 
@@ -113,7 +114,6 @@ export const createBookingService = async (
 
     throw error;
   } finally {
-    // Always close session
     await session.endSession();
   }
 };
@@ -151,7 +151,7 @@ export const getBookingsByEventService =
       (event.organizer as any)._id?.toString() ??
       event.organizer.toString();
 
-    // Only organizer can view bookings
+    // Only event owner can view bookings
     if (organizerId !== userId) {
       throw new AppError(
         "You are not authorized to view these bookings",
@@ -202,15 +202,54 @@ export const cancelBookingService = async (
     );
   }
 
-  // Restore Seats
-  await increaseAvailableSeats(
-    booking.event.toString(),
-    booking.quantity
-  );
+  // ==========================
+  // Start Transaction
+  // ==========================
+  const session =
+    await mongoose.startSession();
 
-  // Cancel Booking
-  const updatedBooking =
-    await cancelBooking(bookingId);
+  try {
+    session.startTransaction();
 
-  return updatedBooking;
+    // Restore seats
+    const updatedEvent =
+      await increaseAvailableSeats(
+        booking.event.toString(),
+        booking.quantity,
+        session
+      );
+
+    if (!updatedEvent) {
+      throw new AppError(
+        "Unable to restore event seats",
+        400
+      );
+    }
+
+    // Cancel booking
+    const updatedBooking =
+      await cancelBooking(
+        bookingId,
+        session
+      );
+
+    if (!updatedBooking) {
+      throw new AppError(
+        "Unable to cancel booking",
+        400
+      );
+    }
+
+    // Commit both operations together
+    await session.commitTransaction();
+
+    return updatedBooking;
+  } catch (error) {
+    // Rollback both operations
+    await session.abortTransaction();
+
+    throw error;
+  } finally {
+    await session.endSession();
+  }
 };

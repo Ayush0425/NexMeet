@@ -32,6 +32,7 @@ const userSchema = new Schema(
       type: String,
       required: true,
       minlength: 6,
+      select: false,
     },
 
     avatar: {
@@ -69,6 +70,7 @@ const userSchema = new Schema(
     refreshToken: {
       type: String,
       default: "",
+      select: false,
     },
 
     // ==========================
@@ -77,11 +79,13 @@ const userSchema = new Schema(
     resetPasswordToken: {
       type: String,
       default: "",
+      select: false,
     },
 
     resetPasswordExpire: {
       type: Date,
       default: null,
+      select: false,
     },
   },
   {
@@ -90,11 +94,16 @@ const userSchema = new Schema(
 );
 
 // Type inferred from schema
-export type User = InferSchemaType<typeof userSchema>;
+export type User =
+  InferSchemaType<typeof userSchema>;
 
 // Mongoose document type
-export type UserDocument = HydratedDocument<User>;
+export type UserDocument =
+  HydratedDocument<User>;
 
-const UserModel = mongoose.model("User", userSchema);
+const UserModel = mongoose.model(
+  "User",
+  userSchema
+);
 
 export default UserModel;

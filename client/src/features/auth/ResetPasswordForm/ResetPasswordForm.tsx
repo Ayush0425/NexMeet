@@ -2,6 +2,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate, useParams } from "react-router-dom";
 
+import toast from "react-hot-toast";
+
 import {
   resetPasswordSchema,
   type ResetPasswordFormData,
@@ -19,7 +21,9 @@ function ResetPasswordForm() {
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm<ResetPasswordFormData>({
-    resolver: zodResolver(resetPasswordSchema),
+    resolver: zodResolver(
+      resetPasswordSchema
+    ),
   });
 
   const onSubmit = async (
@@ -27,26 +31,21 @@ function ResetPasswordForm() {
   ) => {
     try {
       if (!token) {
-        alert("Invalid reset link");
+        toast.error("Invalid reset link");
         return;
       }
 
-      const response = await resetPassword(
-        token,
-        {
-          password: data.password,
-        }
+      await resetPassword(token, {
+        password: data.password,
+      });
+
+      toast.success(
+        "Password reset successful!"
       );
-
-      console.log(response);
-
-      alert("Password reset successful!");
 
       navigate("/login");
     } catch (error: any) {
-      console.error(error);
-
-      alert(
+      toast.error(
         error.response?.data?.message ||
           "Something went wrong"
       );
@@ -99,7 +98,7 @@ function ResetPasswordForm() {
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:opacity-50"
+        className="w-full rounded-xl bg-emerald-500 py-3 font-semibold text-white transition hover:bg-emerald-600 disabled:cursor-not-allowed disabled:opacity-50"
       >
         {isSubmitting
           ? "Resetting..."

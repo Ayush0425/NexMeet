@@ -18,6 +18,7 @@ const bookingSchema = new Schema(
       type: Number,
       required: true,
       min: 1,
+      max: 10,
     },
 
     totalPrice: {
@@ -28,13 +29,21 @@ const bookingSchema = new Schema(
 
     bookingStatus: {
       type: String,
-      enum: ["pending", "confirmed", "cancelled"],
+      enum: [
+        "pending",
+        "confirmed",
+        "cancelled",
+      ],
       default: "pending",
     },
 
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: [
+        "pending",
+        "paid",
+        "failed",
+      ],
       default: "pending",
     },
   },
@@ -43,15 +52,43 @@ const bookingSchema = new Schema(
   }
 );
 
+// ==========================
+// Indexes
+// ==========================
+
 // Faster queries for My Bookings
 bookingSchema.index({
   user: 1,
   createdAt: -1,
 });
 
+// Faster queries for Event Bookings
 bookingSchema.index({
   event: 1,
 });
+
+// Prevent multiple active bookings
+// for the same user and event.
+//
+// Cancelled bookings are excluded,
+// so a user can book again after cancellation.
+bookingSchema.index(
+  {
+    user: 1,
+    event: 1,
+  },
+  {
+    unique: true,
+    partialFilterExpression: {
+      bookingStatus: {
+        $in: [
+          "pending",
+          "confirmed",
+        ],
+      },
+    },
+  }
+);
 
 export default mongoose.model(
   "Booking",

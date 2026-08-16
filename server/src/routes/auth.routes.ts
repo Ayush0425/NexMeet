@@ -8,17 +8,40 @@ import {
 
 import { protect } from "../middleware/auth.middleware";
 import { authorize } from "../middleware/role.middleware";
+import { authRateLimiter } from "../middleware/rate-limit.middleware";
 
 const router = Router();
 
+// ==========================
 // Public Routes
-router.post("/register", registerUser);
-router.post("/login", loginUser);
+// ==========================
 
+router.post(
+  "/register",
+  authRateLimiter,
+  registerUser
+);
+
+router.post(
+  "/login",
+  authRateLimiter,
+  loginUser
+);
+
+// ==========================
 // Protected Routes
-router.get("/me", protect, getCurrentUser);
+// ==========================
 
-// Organizer Only Route (Temporary for Testing)
+router.get(
+  "/me",
+  protect,
+  getCurrentUser
+);
+
+// ==========================
+// Organizer Only Route
+// ==========================
+
 router.get(
   "/organizer",
   protect,

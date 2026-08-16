@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
+import toast from "react-hot-toast";
+
 import {
   registerSchema,
   type RegisterFormData,
@@ -17,22 +19,24 @@ function RegisterForm() {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (
+    data: RegisterFormData
+  ) => {
     try {
       // Remove confirmPassword before sending to backend
-      const { confirmPassword, ...payload } = data;
+      const { confirmPassword, ...payload } =
+        data;
 
-      const response = await registerUser(payload);
+      await registerUser(payload);
 
-      console.log(response);
-
-      alert("Registration Successful!");
+      toast.success(
+        "Registration successful!"
+      );
     } catch (error: any) {
-      console.error(error);
-
-      console.log(error.response?.data);
-
-      alert(error.response?.data?.message || "Registration Failed!");
+      toast.error(
+        error.response?.data?.message ||
+          "Registration failed!"
+      );
     }
   };
 
