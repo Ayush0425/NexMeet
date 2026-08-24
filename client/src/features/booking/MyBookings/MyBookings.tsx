@@ -118,7 +118,7 @@ function MyBookings() {
   const paymentMutation = useMutation({
     mutationFn: createPaymentOrder,
 
-    onSuccess: (response, bookingId) => {
+   onSuccess: (response) => {
       const order = response?.data?.order;
       const key = response?.key;
 
