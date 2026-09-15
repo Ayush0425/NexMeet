@@ -1,74 +1,105 @@
-import { Search, Ticket, PartyPopper } from "lucide-react";
+import { QrCode, ScanLine, ShieldCheck, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
-const steps = [
+const features = [
   {
-    icon: Search,
-    title: "Discover Events",
+    icon: Zap,
+    badge: "For Attendees",
+    title: "Instant 1-Click RSVP & Ticketing",
     description:
-      "Browse concerts, hackathons, workshops and meetups happening around you.",
+      "Reserve free passes or purchase tickets securely via Razorpay in seconds without tedious multi-page checkout forms.",
   },
   {
-    icon: Ticket,
-    title: "Book Your Ticket",
+    icon: QrCode,
+    badge: "Digital Passes",
+    title: "Always-Ready QR Code Wallet",
     description:
-      "Reserve your seat securely in just a few clicks with instant confirmation.",
+      "Never lose your tickets. Access high-resolution verifiable QR passes right from your NexMeet dashboard or email anytime.",
   },
   {
-    icon: PartyPopper,
-    title: "Enjoy the Experience",
+    icon: ScanLine,
+    badge: "For Organizers",
+    title: "Instant Camera Gate Check-In",
     description:
-      "Attend amazing events, connect with people and create unforgettable memories.",
+      "Organizers can check in hundreds of attendees effortlessly at the venue entrance using our built-in mobile camera scanner.",
+  },
+  {
+    icon: ShieldCheck,
+    badge: "Host Tools",
+    title: "Live Sales & Attendee Analytics",
+    description:
+      "Monitor revenue in real time, view buyer rosters, manage seat capacity, and export attendee lists whenever you need.",
   },
 ];
 
 function HowItWorks() {
   return (
-    <section className="bg-[#0B1120] py-24">
+    <section className="relative border-b border-slate-200/80 bg-slate-50/70 py-20 lg:py-24">
       <div className="mx-auto max-w-7xl px-6">
-        <div className="mb-16 text-center">
-          <p className="mb-3 uppercase tracking-widest text-emerald-400 font-semibold">
-            How It Works
+        {/* Header */}
+        <div className="mb-16 text-center max-w-3xl mx-auto">
+          <p className="mb-2 text-xs font-semibold uppercase tracking-widest text-emerald-600">
+            Engineered for Modern Gatherings
           </p>
 
-          <h2 className="text-4xl md:text-5xl font-bold text-white">
-            Book Events in 3 Simple Steps
+          <h2 className="text-3xl font-bold text-slate-900 sm:text-4xl">
+            Everything you need to discover or host
           </h2>
 
-          <p className="mt-5 max-w-2xl mx-auto text-slate-400">
-            Finding and booking your favorite events has never been easier.
+          <p className="mt-3 text-sm sm:text-base text-slate-600">
+            From casual community meetups to 1,000+ attendee summits, NexMeet replaces clunky ticketing tools with speed and craft.
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-3">
-          {steps.map((step, index) => {
-            const Icon = step.icon;
+        {/* 4 Feature Columns */}
+        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {features.map((item, index) => {
+            const Icon = item.icon;
 
             return (
               <div
-                key={step.title}
-                className="rounded-2xl border border-slate-800 bg-[#162032] p-8 text-center"
+                key={item.title}
+                className="relative flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-6 shadow-xs transition-all duration-300 hover:border-slate-300 hover:shadow-xl hover:shadow-slate-200/70"
               >
-                <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-emerald-500/10">
-                  <Icon
-                    size={36}
-                    className="text-emerald-400"
-                  />
+                <div>
+                  <div className="mb-4 flex items-center justify-between">
+                    <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-600">
+                      <Icon size={22} />
+                    </div>
+                    <span className="text-xs font-mono font-bold text-slate-400">
+                      0{index + 1}
+                    </span>
+                  </div>
+
+                  <span className="inline-block rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-slate-700 mb-3 border border-slate-200">
+                    {item.badge}
+                  </span>
+
+                  <h3 className="text-base font-bold text-slate-900">
+                    {item.title}
+                  </h3>
+
+                  <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                    {item.description}
+                  </p>
                 </div>
-
-                <div className="mb-4 inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-500 text-sm font-bold text-white">
-                  {index + 1}
-                </div>
-
-                <h3 className="mb-3 text-2xl font-semibold text-white">
-                  {step.title}
-                </h3>
-
-                <p className="text-slate-400">
-                  {step.description}
-                </p>
               </div>
             );
           })}
+        </div>
+
+        {/* Quick Organizer Callout */}
+        <div className="mt-14 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div>
+            <h4 className="text-lg font-bold text-slate-900">Are you planning an upcoming event?</h4>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">Set up ticketing, manage RSVPs, and generate automated passes with zero upfront platform fees.</p>
+          </div>
+          <Link
+            to="/dashboard/create-event"
+            className="rounded-xl bg-emerald-600 px-6 py-3 text-xs sm:text-sm font-semibold text-white shadow-md shadow-emerald-600/20 transition hover:bg-emerald-500 shrink-0"
+          >
+            Create Your Event Now
+          </Link>
         </div>
       </div>
     </section>

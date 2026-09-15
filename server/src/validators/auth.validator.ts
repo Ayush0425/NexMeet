@@ -44,8 +44,8 @@ export const registerSchema = z.object({
   password: z
     .string()
     .min(
-      8,
-      "Password must be at least 8 characters"
+      6,
+      "Password must be at least 6 characters"
     )
     .max(
       128,
@@ -95,8 +95,8 @@ export const loginSchema = z.object({
   password: z
     .string()
     .min(
-      8,
-      "Password must be at least 8 characters"
+      6,
+      "Password must be at least 6 characters"
     )
     .max(
       128,
@@ -140,8 +140,8 @@ export const resetPasswordSchema =
     password: z
       .string()
       .min(
-        8,
-        "Password must be at least 8 characters"
+        6,
+        "Password must be at least 6 characters"
       )
       .max(
         128,

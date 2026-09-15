@@ -1,18 +1,14 @@
 export const NAV_LINKS = [
   {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Events",
+    label: "Explore Events",
     href: "/events",
   },
   {
-    label: "About",
-    href: "/about",
+    label: "Categories",
+    href: "/events",
   },
   {
-    label: "Contact",
-    href: "/contact",
+    label: "Host an Event",
+    href: "/dashboard/create-event",
   },
 ];

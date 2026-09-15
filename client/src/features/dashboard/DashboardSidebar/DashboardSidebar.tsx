@@ -1,7 +1,8 @@
 import { useState } from "react";
-
 import {
+  CalendarDays,
   CalendarPlus,
+  Compass,
   LayoutDashboard,
   ListChecks,
   LogOut,
@@ -11,230 +12,194 @@ import {
   User,
   X,
 } from "lucide-react";
-
-import { NavLink } from "react-router-dom";
-
+import { Link, NavLink } from "react-router-dom";
 import LogoutButton from "../../../components/common/LogoutButton/LogoutButton";
 import { useAuth } from "../../../context/auth/AuthContext";
 
 function DashboardSidebar() {
   const { user } = useAuth();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
-  const [mobileOpen, setMobileOpen] =
-    useState(false);
+  const isOrganizer = user?.role?.toLowerCase() === "organizer";
 
-  const isOrganizer =
-    user?.role?.toLowerCase() === "organizer";
-
-  // ==========================
-  // Close Mobile Sidebar
-  // ==========================
   const closeMobileMenu = () => {
     setMobileOpen(false);
   };
 
-  // ==========================
-  // Navigation Class
-  // ==========================
-  const navLinkClass = ({
-    isActive,
-  }: {
-    isActive: boolean;
-  }) =>
-    `flex items-center gap-4 rounded-xl px-4 py-3 font-medium transition ${
+  const navLinkClass = ({ isActive }: { isActive: boolean }) =>
+    `flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold transition-all ${
       isActive
-        ? "bg-emerald-500 text-white"
-        : "text-slate-300 hover:bg-slate-800 hover:text-white"
+        ? "bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-2xs"
+        : "text-slate-600 hover:bg-slate-100 hover:text-slate-900 border border-transparent"
     }`;
 
   return (
     <>
-      {/* ==========================
-          Mobile Header
-      ========================== */}
-      <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-800 bg-[#0B1120] px-4 md:hidden">
-        <div>
-          <h1 className="text-xl font-bold text-emerald-400">
-            NexMeet
-          </h1>
-
-          <p className="text-xs text-slate-400">
-            {isOrganizer
-              ? "Organizer Panel"
-              : "User Panel"}
-          </p>
-        </div>
+      {/* Mobile Top App Bar */}
+      <div className="sticky top-0 z-40 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 md:hidden">
+        <Link to="/" className="flex items-center gap-2">
+          <CalendarDays className="h-6 w-6 text-emerald-600" />
+          <span className="text-lg font-bold text-slate-900">NexMeet</span>
+          <span className="rounded-full bg-emerald-50 border border-emerald-200 px-2 py-0.5 text-[10px] font-semibold text-emerald-700">
+            {isOrganizer ? "Organizer" : "Attendee"}
+          </span>
+        </Link>
 
         <button
           type="button"
-          onClick={() =>
-            setMobileOpen(true)
-          }
-          className="rounded-xl p-2 text-slate-300 transition hover:bg-slate-800 hover:text-white"
-          aria-label="Open dashboard menu"
-          aria-expanded={mobileOpen}
+          onClick={() => setMobileOpen(true)}
+          className="rounded-xl p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+          aria-label="Open navigation menu"
         >
-          <Menu size={24} />
+          <Menu size={22} />
         </button>
       </div>
 
-      {/* ==========================
-          Mobile Backdrop
-      ========================== */}
+      {/* Mobile Backdrop */}
       {mobileOpen && (
         <button
           type="button"
-          aria-label="Close dashboard menu"
+          aria-label="Close menu backdrop"
           onClick={closeMobileMenu}
-          className="fixed inset-0 z-40 bg-black/60 md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs md:hidden"
         />
       )}
 
-      {/* ==========================
-          Sidebar
-      ========================== */}
+      {/* Sidebar Container */}
       <aside
         className={`
           fixed inset-y-0 left-0 z-50
           flex min-h-screen w-64 flex-col
-          border-r border-slate-800
-          bg-[#0B1120]
+          border-r border-slate-200
+          bg-white
           transition-transform duration-300
           md:static md:z-auto md:translate-x-0
-          ${
-            mobileOpen
-              ? "translate-x-0"
-              : "-translate-x-full"
-          }
+          ${mobileOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        {/* ==========================
-            Logo
-        ========================== */}
-        <div className="border-b border-slate-800 px-5 py-6">
+        {/* Brand Header */}
+        <div className="border-b border-slate-100 p-5">
           <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-emerald-400">
-                NexMeet
-              </h1>
+            <Link to="/" className="flex items-center gap-2.5">
+              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-md shadow-emerald-600/20 font-bold">
+                <CalendarDays size={18} />
+              </div>
+              <div>
+                <span className="text-lg font-bold tracking-tight text-slate-900 block leading-none">
+                  Nex<span className="text-emerald-600">Meet</span>
+                </span>
+                <span className="text-[10px] font-semibold text-emerald-700 uppercase tracking-wider block mt-1">
+                  {isOrganizer ? "Organizer Console" : "Attendee Hub"}
+                </span>
+              </div>
+            </Link>
 
-              <p className="mt-1 text-sm text-slate-400">
-                {isOrganizer
-                  ? "Organizer Panel"
-                  : "User Panel"}
-              </p>
-            </div>
-
-            {/* Mobile Close Button */}
             <button
               type="button"
               onClick={closeMobileMenu}
-              className="rounded-xl p-2 text-slate-400 transition hover:bg-slate-800 hover:text-white md:hidden"
-              aria-label="Close dashboard menu"
+              className="rounded-xl p-1.5 text-slate-400 hover:bg-slate-100 hover:text-slate-800 md:hidden"
+              aria-label="Close menu"
             >
-              <X size={22} />
+              <X size={20} />
             </button>
           </div>
         </div>
 
-        {/* ==========================
-            Navigation
-        ========================== */}
-        <nav className="flex-1 space-y-3 overflow-y-auto px-5 py-8">
-          {/* Dashboard */}
-          <NavLink
-            to="/dashboard"
-            end
-            onClick={closeMobileMenu}
-            className={navLinkClass}
-          >
-            <LayoutDashboard size={20} />
-            Dashboard
-          </NavLink>
+        {/* Navigation Sections */}
+        <nav className="flex-1 space-y-6 overflow-y-auto px-4 py-6">
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              Workspace
+            </p>
 
-          {/* ==========================
-              Organizer Navigation
-          ========================== */}
+            <NavLink to="/dashboard" end onClick={closeMobileMenu} className={navLinkClass}>
+              <LayoutDashboard size={17} />
+              <span>Overview</span>
+            </NavLink>
+          </div>
+
+          {/* Organizer Routes */}
           {isOrganizer && (
-            <>
-              {/* Create Event */}
-              <NavLink
-                to="/dashboard/create-event"
-                onClick={closeMobileMenu}
-                className={navLinkClass}
-              >
-                <CalendarPlus size={20} />
-                Create Event
+            <div className="space-y-1">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                Event Tools
+              </p>
+
+              <NavLink to="/dashboard/create-event" onClick={closeMobileMenu} className={navLinkClass}>
+                <CalendarPlus size={17} />
+                <span>Create New Event</span>
               </NavLink>
 
-              {/* My Events */}
-              <NavLink
-                to="/dashboard/my-events"
-                onClick={closeMobileMenu}
-                className={navLinkClass}
-              >
-                <ListChecks size={20} />
-                My Events
+              <NavLink to="/dashboard/my-events" onClick={closeMobileMenu} className={navLinkClass}>
+                <ListChecks size={17} />
+                <span>My Hosted Events</span>
               </NavLink>
 
-              {/* Check-in */}
-              <NavLink
-                to="/dashboard/check-in"
-                onClick={closeMobileMenu}
-                className={navLinkClass}
-              >
-                <QrCode size={20} />
-                Check-in
+              <NavLink to="/dashboard/check-in" onClick={closeMobileMenu} className={navLinkClass}>
+                <QrCode size={17} />
+                <span>Gate QR Scanner</span>
               </NavLink>
-            </>
+            </div>
           )}
 
-          {/* ==========================
-              Normal User Navigation
-          ========================== */}
+          {/* Attendee Routes */}
           {!isOrganizer && (
-            <>
-              {/* My Bookings */}
-              <NavLink
-                to="/dashboard/my-bookings"
-                onClick={closeMobileMenu}
-                className={navLinkClass}
-              >
-                <Ticket size={20} />
-                My Bookings
+            <div className="space-y-1">
+              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+                My Passes
+              </p>
+
+              <NavLink to="/dashboard/my-tickets" onClick={closeMobileMenu} className={navLinkClass}>
+                <Ticket size={17} />
+                <span>Ticket Wallet (QR)</span>
               </NavLink>
 
-              {/* My Tickets */}
-              <NavLink
-                to="/dashboard/my-tickets"
-                onClick={closeMobileMenu}
-                className={navLinkClass}
-              >
-                <Ticket size={20} />
-                My Tickets
+              <NavLink to="/dashboard/my-bookings" onClick={closeMobileMenu} className={navLinkClass}>
+                <ListChecks size={17} />
+                <span>Order History</span>
               </NavLink>
-            </>
+            </div>
           )}
 
-          {/* Profile */}
-          <NavLink
-            to="/dashboard/profile"
-            onClick={closeMobileMenu}
-            className={navLinkClass}
-          >
-            <User size={20} />
-            Profile
-          </NavLink>
+          {/* General Navigation */}
+          <div className="space-y-1">
+            <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2">
+              Explore & Account
+            </p>
+
+            <Link
+              to="/events"
+              onClick={closeMobileMenu}
+              className="flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-xs font-semibold text-slate-600 transition hover:bg-slate-100 hover:text-slate-900"
+            >
+              <Compass size={17} />
+              <span>Public Events</span>
+            </Link>
+
+            <NavLink to="/dashboard/profile" onClick={closeMobileMenu} className={navLinkClass}>
+              <User size={17} />
+              <span>Profile Settings</span>
+            </NavLink>
+          </div>
         </nav>
 
-        {/* ==========================
-            Logout
-        ========================== */}
-        <div className="border-t border-slate-800 p-5">
-          <div className="flex items-center gap-3 text-slate-300">
-            <LogOut size={20} />
+        {/* User Card & Logout Footer */}
+        <div className="border-t border-slate-100 p-4 space-y-3 bg-slate-50">
+          <div className="flex items-center gap-3 px-1">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-100 text-xs font-bold text-emerald-700 uppercase shrink-0">
+              {user?.fullName ? user.fullName[0] : "U"}
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-semibold text-slate-900 truncate">{user?.fullName || "User"}</p>
+              <p className="text-[10px] text-slate-500 truncate">{user?.email}</p>
+            </div>
+          </div>
 
-            <LogoutButton />
+          <div className="pt-2 border-t border-slate-200/80 flex items-center justify-between text-xs text-rose-600">
+            <div className="flex items-center gap-2">
+              <LogOut size={15} />
+              <LogoutButton />
+            </div>
           </div>
         </div>
       </aside>
