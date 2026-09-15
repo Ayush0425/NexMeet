@@ -80,7 +80,7 @@ function EventCard({
           ) : (
             <div className="flex items-center gap-1.5 text-xs text-amber-600 font-medium pt-1">
               <Sparkles className="h-3 w-3" />
-              <span>Confirmed RSVP • Instant Ticket</span>
+              <span>Instant Pass • Confirmed Entry</span>
             </div>
           )}
         </div>

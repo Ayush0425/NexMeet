@@ -5,7 +5,7 @@ const features = [
   {
     icon: Zap,
     badge: "For Attendees",
-    title: "Instant 1-Click RSVP & Ticketing",
+    title: "Instant 1-Click Ticket Booking",
     description:
       "Reserve free passes or purchase tickets securely via Razorpay in seconds without tedious multi-page checkout forms.",
   },
@@ -92,7 +92,7 @@ function HowItWorks() {
         <div className="mt-14 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-6">
           <div>
             <h4 className="text-lg font-bold text-slate-900">Are you planning an upcoming event?</h4>
-            <p className="text-xs sm:text-sm text-slate-600 mt-1">Set up ticketing, manage RSVPs, and generate automated passes with zero upfront platform fees.</p>
+            <p className="text-xs sm:text-sm text-slate-600 mt-1">Set up ticketing, manage bookings, and generate automated passes with zero upfront platform fees.</p>
           </div>
           <Link
             to="/dashboard/create-event"
