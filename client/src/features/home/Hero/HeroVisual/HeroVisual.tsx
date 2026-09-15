@@ -1,4 +1,4 @@
-import { Calendar, Clock, MapPin, QrCode, ShieldCheck, Ticket, Users, ArrowUpRight } from "lucide-react";
+import { Calendar, Clock, MapPin, QrCode, ShieldCheck, Users, ArrowUpRight } from "lucide-react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 
@@ -120,22 +120,6 @@ function HeroVisual() {
             <span>RSVP Now</span>
             <ArrowUpRight className="h-3.5 w-3.5" />
           </Link>
-        </div>
-      </motion.div>
-
-      {/* Floating Real-Time Activity Ticker */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ delay: 0.3, duration: 0.5 }}
-        className="absolute -bottom-5 -left-6 flex items-center gap-3 rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-xl"
-      >
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-emerald-100 text-emerald-700">
-          <Ticket className="h-4 w-4" />
-        </div>
-        <div className="text-xs">
-          <p className="font-semibold text-slate-900">2 tickets booked just now</p>
-          <p className="text-[11px] text-slate-500">Bangalore AI Night • 3 mins ago</p>
         </div>
       </motion.div>
     </div>
